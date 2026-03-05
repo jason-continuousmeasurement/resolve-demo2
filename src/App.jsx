@@ -1523,4 +1523,449 @@ function FinalScreen({ onNext }) {
   const statusLabel = { ready: "READY", support: "READY WITH SUPPORT", "not-ready": "NOT READY" };
 
   const counts = {
-   
+    ready: students.filter(s => s.status === "ready").length,
+    support: students.filter(s => s.status === "support").length,
+    "not-ready": students.filter(s => s.status === "not-ready").length,
+  };
+
+  const miscPrevalence = [
+    { name: "Subtracting instead of comparing", count: 2, color: C.red },
+    { name: "Treating a ratio as a single number", count: 2, color: C.red },
+    { name: "Confusing part-to-part and part-to-whole", count: 2, color: C.amber },
+    { name: "Writing the ratio in the wrong order", count: 1, color: C.purple },
+  ];
+
+  const knowledgeTrace = {
+    "Amara J.": {
+      status: "support", module: "C",
+      todayShift: "Today's exit ticket moved her estimate upward slightly on ratio language but confirmed the part-to-whole gap. Estimate unchanged on that dimension — consistent with prior lessons.",
+      confidenceNote: "Based on 4 exit tickets across 6.RP.A.1 lessons.",
+      suggestion: "Monitor · Support Module C before Lesson 5",
+      suggestionDetail: "Part-to-whole confusion is stable and detectable. Support Module C is well-matched. No broader intervention indicated at this stage. If the confusion persists after Module C, flag for review before moving to 6.RP.A.2.",
+      lessons: [
+        { label: "Lesson 1", theta: -0.2, miscs: ["Part-to-whole confusion emerging"] },
+        { label: "Lesson 2", theta: 0.1, miscs: ["Part-to-whole confusion present"] },
+        { label: "Lesson 3", theta: 0.3, miscs: ["Ratio language strengthening"] },
+        { label: "Lesson 4 (today)", theta: 0.4, miscs: ["Part-to-whole confusion confirmed"] },
+      ],
+      adjacentRisk: [
+        { standard: "6.RP.A.2 — Unit Rate", risk: "moderate", note: "Part-to-whole confusion likely to surface in unit rate contexts if unresolved." },
+        { standard: "6.RP.A.3 — Equivalent Ratios", risk: "low", note: "Moderate risk depending on whether the part-to-whole confusion is resolved before this standard is addressed." },
+      ],
+      mlDetail: {
+        modelType: "Knowledge tracing — labeled response sequences against psychometrician-defined misconception taxonomy",
+        latentState: "Proficiency estimate: +0.38 (moderate confidence · SE = 0.24)",
+        activeMisc: "Part-to-whole confusion active — estimated probability 0.71 (95% CI: 0.52–0.85)",
+        priorEvidence: "Convergent evidence across 3 items this lesson. Pattern consistent with prior lessons.",
+        projections: "6.RP.A.2: 62% probability of difficulty if part-to-whole confusion unresolved · 6.RP.A.3: 44%",
+        dataNote: "Labeled against psychometrician-defined misconception taxonomy. Latent states defined before data collection — not inferred post-hoc from behavioral proxies.",
+      },
+    },
+    "Diego R.": {
+      status: "not-ready", module: "A",
+      todayShift: "Today confirmed what prior lessons suggested. Additive reasoning is dominant and consistent — not situational. Estimate moved downward. Gateway misconception active.",
+      confidenceNote: "Based on 4 exit tickets across 6.RP.A.1 lessons. High confidence — convergent evidence across all four.",
+      suggestion: "Intervene · Support Module A immediately",
+      suggestionDetail: "Gateway misconception is blocking all ratio reasoning. Downstream standard projections are unreliable until this is resolved — reported as high risk rather than specific estimates. Do not advance to Lesson 5.",
+      lessons: [
+        { label: "Lesson 1", theta: -0.6, miscs: ["Additive reasoning dominant"] },
+        { label: "Lesson 2", theta: -0.7, miscs: ["Additive reasoning persistent"] },
+        { label: "Lesson 3", theta: -0.8, miscs: ["No movement — gateway active"] },
+        { label: "Lesson 4 (today)", theta: -0.8, miscs: ["Gateway misconception confirmed"] },
+      ],
+      adjacentRisk: [
+        { standard: "6.RP.A.2 — Unit Rate", risk: "high", note: "Additive reasoning will systematically corrupt unit rate reasoning." },
+        { standard: "6.RP.A.3 — Equivalent Ratios", risk: "high", note: "Cannot be meaningfully assessed until gateway misconception resolved." },
+      ],
+      mlDetail: {
+        modelType: "Knowledge tracing — labeled response sequences against psychometrician-defined misconception taxonomy",
+        latentState: "Proficiency estimate: −0.81 (high confidence · SE = 0.31)",
+        activeMisc: "Additive comparison (gateway) active — estimated probability 0.88 (95% CI: 0.72–0.96)",
+        priorEvidence: "High-confidence convergent evidence across all 4 lessons. Pattern stable — not improving.",
+        projections: "6.RP.A.2: 91% probability of difficulty · 6.RP.A.3: 89% — downstream projections unreliable until gateway resolved",
+        dataNote: "Gateway misconception flagged as blocking. Downstream projections reported as categorical risk rather than theta estimates — single entrenched misconception makes point estimates misleading.",
+      },
+    },
+  };
+
+  const toggleMl = (key) => setMlExpanded(prev => ({ ...prev, [key]: !prev[key] }));
+
+  const ProficiencyViz = ({ lessons }) => {
+    if (profViz === "continuum") {
+      return (
+        <div>
+          <div style={{ fontSize: 10, color: C.textMuted, fontWeight: 700, marginBottom: 10, display: "flex", justifyContent: "space-between" }}>
+            <span>← BELOW READINESS</span><span>AT READINESS →</span>
+          </div>
+          {lessons.map((l, i) => {
+            const pct = Math.round(((l.theta + 2) / 4) * 100);
+            const col = l.theta > 0.5 ? C.accent : l.theta > 0 ? C.amber : C.red;
+            const isToday = l.label.includes("today");
+            return (
+              <div key={i} style={{ marginBottom: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                  <span style={{ fontSize: 11, color: isToday ? C.text : C.textMuted, fontWeight: isToday ? 700 : 400 }}>{l.label}</span>
+                  <span style={{ fontSize: 11, color: col, fontWeight: 700, fontFamily: "monospace" }}>θ = {l.theta.toFixed(2)}</span>
+                </div>
+                <div style={{ background: C.border, borderRadius: 4, height: isToday ? 10 : 6, overflow: "hidden", position: "relative" }}>
+                  <div style={{ width: `${pct}%`, height: "100%", background: col, borderRadius: 4 }} />
+                  {/* uncertainty band */}
+                  <div style={{ position: "absolute", top: 0, left: `${Math.max(pct - 8, 0)}%`, width: "16%", height: "100%", background: col + "33", borderRadius: 4 }} />
+                </div>
+                {l.miscs.map((m, j) => <div key={j} style={{ fontSize: 10, color: C.textMuted, marginTop: 3 }}>↳ {m}</div>)}
+              </div>
+            );
+          })}
+          <div style={{ fontSize: 10, color: C.textDim, marginTop: 6 }}>Shaded band = uncertainty range. Wider band = lower confidence.</div>
+        </div>
+      );
+    }
+    // distribution view
+    return (
+      <div>
+        <div style={{ fontSize: 10, color: C.textMuted, fontWeight: 700, marginBottom: 10 }}>BELIEF STATE — PROBABILITY DISTRIBUTION ACROSS LESSONS</div>
+        {lessons.map((l, i) => {
+          const mu = l.theta;
+          const sigma = 0.28 - (i * 0.04);
+          const isToday = l.label.includes("today");
+          const col = mu > 0.5 ? C.accent : mu > 0 ? C.amber : C.red;
+          const points = Array.from({ length: 40 }, (_, k) => {
+            const x = -2 + (k / 39) * 4;
+            const y = Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2)) / (sigma * Math.sqrt(2 * Math.PI));
+            return { x, y };
+          });
+          const maxY = Math.max(...points.map(p => p.y));
+          const h = isToday ? 44 : 28;
+          const w = 260;
+          return (
+            <div key={i} style={{ marginBottom: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                <span style={{ fontSize: 11, color: isToday ? C.text : C.textMuted, fontWeight: isToday ? 700 : 400 }}>{l.label}</span>
+                <span style={{ fontSize: 11, color: col, fontWeight: 700, fontFamily: "monospace" }}>θ̂ = {mu.toFixed(2)}</span>
+              </div>
+              <svg width={w} height={h} style={{ overflow: "visible" }}>
+                <defs>
+                  <linearGradient id={`g${i}`} x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor={col} stopOpacity="0.7" />
+                    <stop offset="100%" stopColor={col} stopOpacity="0.1" />
+                  </linearGradient>
+                </defs>
+                {/* baseline */}
+                <line x1={0} y1={h} x2={w} y2={h} stroke={C.border} strokeWidth={1} />
+                {/* zero line */}
+                <line x1={w/2} y1={0} x2={w/2} y2={h} stroke={C.textDim} strokeWidth={1} strokeDasharray="3,3" />
+                {/* curve */}
+                <polyline
+                  points={points.map(p => {
+                    const px = ((p.x + 2) / 4) * w;
+                    const py = h - (p.y / maxY) * (h - 4);
+                    return `${px},${py}`;
+                  }).join(" ")}
+                  fill="none" stroke={col} strokeWidth={isToday ? 2 : 1.5}
+                />
+                {/* fill */}
+                <polygon
+                  points={[
+                    ...points.map(p => {
+                      const px = ((p.x + 2) / 4) * w;
+                      const py = h - (p.y / maxY) * (h - 4);
+                      return `${px},${py}`;
+                    }),
+                    `${w},${h}`, `0,${h}`
+                  ].join(" ")}
+                  fill={`url(#g${i})`}
+                />
+              </svg>
+              {l.miscs.map((m, j) => <div key={j} style={{ fontSize: 10, color: C.textMuted, marginTop: 2 }}>↳ {m}</div>)}
+            </div>
+          );
+        })}
+        <div style={{ fontSize: 10, color: C.textDim, marginTop: 4 }}>Dashed line = readiness threshold. Narrower curve = higher confidence. Curve shifts right as understanding develops.</div>
+      </div>
+    );
+  };
+
+  const StudentProfile = ({ student }) => {
+    const trace = knowledgeTrace[student.name];
+    if (!trace) return (
+      <div style={{ padding: "24px 0", textAlign: "center", color: C.textMuted, fontSize: 13 }}>
+        Full knowledge trace available for Amara J. and Diego R. in this demo.
+      </div>
+    );
+    const riskColor = { high: C.red, moderate: C.amber, low: C.accent };
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {/* header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
+          <div>
+            <div style={{ color: C.text, fontWeight: 800, fontSize: 18 }}>{student.name}</div>
+            <div style={{ color: C.textMuted, fontSize: 13, marginTop: 2 }}>6.RP.A.1 · Lesson 4 · Period 2</div>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ background: statusColor[trace.status] + "22", border: `1px solid ${statusColor[trace.status]}44`, borderRadius: 8, padding: "8px 14px", textAlign: "center" }}>
+              <div style={{ fontSize: 10, color: statusColor[trace.status], fontWeight: 800, letterSpacing: "0.07em" }}>{statusLabel[trace.status]}</div>
+            </div>
+            {trace.module && (
+              <div style={{ background: C.amberDim, border: `1px solid ${C.amber}44`, borderRadius: 8, padding: "8px 14px", textAlign: "center" }}>
+                <div style={{ fontSize: 10, color: C.amber, fontWeight: 800 }}>SUPPORT MODULE {trace.module}</div>
+                <div style={{ fontSize: 9, color: C.textMuted, marginTop: 1 }}>RECOMMENDED</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* today's shift */}
+        <Card style={{ borderLeft: `4px solid ${statusColor[trace.status]}` }}>
+          <div style={{ fontSize: 10, color: statusColor[trace.status], fontWeight: 800, letterSpacing: "0.08em", marginBottom: 6 }}>TODAY'S SHIFT</div>
+          <div style={{ color: C.text, fontSize: 13, lineHeight: 1.65 }}>{trace.todayShift}</div>
+          <div style={{ fontSize: 11, color: C.textDim, marginTop: 8 }}>{trace.confidenceNote}</div>
+        </Card>
+
+        {/* system suggestion */}
+        <Card style={{ borderLeft: `4px solid ${C.blue}` }}>
+          <div style={{ fontSize: 10, color: C.blue, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 6 }}>SYSTEM SUGGESTION</div>
+          <div style={{ color: C.text, fontWeight: 700, fontSize: 13, marginBottom: 6 }}>{trace.suggestion}</div>
+          <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.65 }}>{trace.suggestionDetail}</div>
+        </Card>
+
+        {/* proficiency trace */}
+        <Card>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <SectionLabel>Proficiency Estimate — Across Lessons</SectionLabel>
+            <div style={{ display: "flex", gap: 6 }}>
+              {[["continuum","Continuum"],["distribution","Distribution"]].map(([v, l]) => (
+                <button key={v} onClick={() => setProfViz(v)} style={{ padding: "4px 10px", fontSize: 10, fontWeight: 700, border: `1px solid ${profViz === v ? C.accent : C.border}`, background: profViz === v ? C.accentDim : C.surface, color: profViz === v ? C.accent : C.textMuted, borderRadius: 6, cursor: "pointer" }}>{l}</button>
+              ))}
+            </div>
+          </div>
+          <ProficiencyViz lessons={trace.lessons} />
+        </Card>
+
+        {/* adjacent standard risk */}
+        <Card>
+          <SectionLabel>Adjacent Standard Risk</SectionLabel>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {trace.adjacentRisk.map((r, i) => (
+              <div key={i} style={{ display: "flex", gap: 12, padding: "10px 12px", borderRadius: 8, background: C.surfaceUp, borderLeft: `3px solid ${riskColor[r.risk]}` }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
+                    <span style={{ color: C.text, fontWeight: 700, fontSize: 12 }}>{r.standard}</span>
+                    <Tag small color={riskColor[r.risk]}>{r.risk.toUpperCase()} RISK</Tag>
+                  </div>
+                  <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.5 }}>{r.note}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* ML detail — expandable */}
+        <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: "hidden" }}>
+          <div onClick={() => toggleMl(student.name)} style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: C.surfaceUp }}>
+            <div>
+              <div style={{ color: C.text, fontWeight: 700, fontSize: 13 }}>What's powering this</div>
+              <div style={{ color: C.textMuted, fontSize: 11, marginTop: 1 }}>Latent state estimates · Model architecture · Data provenance</div>
+            </div>
+            <span style={{ color: C.accent, fontSize: 14 }}>{mlExpanded[student.name] ? "▲" : "▼"}</span>
+          </div>
+          {mlExpanded[student.name] && (
+            <div style={{ padding: "14px 16px", background: C.surface, borderTop: `1px solid ${C.border}`, display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                ["Model architecture", trace.mlDetail.modelType],
+                ["Current estimate", trace.mlDetail.latentState],
+                ["Active misunderstanding", trace.mlDetail.activeMisc],
+                ["Evidence basis", trace.mlDetail.priorEvidence],
+                ["Downstream projections", trace.mlDetail.projections],
+              ].map(([label, val]) => (
+                <div key={label} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                  <span style={{ color: C.textMuted, fontSize: 11, minWidth: 170, flexShrink: 0 }}>{label}</span>
+                  <span style={{ color: C.text, fontSize: 12, lineHeight: 1.5 }}>{val}</span>
+                </div>
+              ))}
+              <div style={{ marginTop: 4, padding: "10px 12px", background: C.accentDim, borderRadius: 7, border: `1px solid ${C.accent}33` }}>
+                <div style={{ fontSize: 10, color: C.accent, fontWeight: 800, marginBottom: 4 }}>DATA ARCHITECTURE</div>
+                <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>{trace.mlDetail.dataNote}</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 20px" }}>
+      <div style={{ marginBottom: 20 }}>
+        <SectionLabel>Report & Dashboard</SectionLabel>
+        <h2 style={{ color: C.text, fontSize: 22, margin: 0, fontWeight: 800 }}>6.RP.A.1 · Lesson 4 · Period 2</h2>
+        <div style={{ color: C.textMuted, fontSize: 13, marginTop: 4 }}>Class overview · Individual knowledge traces · Cross-lesson proficiency estimates</div>
+      </div>
+
+      <div style={{ display: "flex", gap: 0, marginBottom: 0, borderBottom: `1px solid ${C.border}` }}>
+        {[["class","Class View"],["student","Student View"]].map(([id, label]) => (
+          <button key={id} onClick={() => setTab(id)} style={{ padding: "10px 20px", background: "none", border: "none", borderBottom: tab === id ? `2px solid ${C.accent}` : "2px solid transparent", color: tab === id ? C.accent : C.textMuted, fontWeight: tab === id ? 700 : 500, fontSize: 13, cursor: "pointer", marginBottom: -1 }}>{label}</button>
+        ))}
+      </div>
+
+      {tab === "class" && (
+        <div style={{ paddingTop: 20 }}>
+          {/* summary strip */}
+          <div style={{ display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
+            {Object.entries(counts).map(([k, v]) => (
+              <div key={k} style={{ flex: 1, minWidth: 120, textAlign: "center", background: statusColor[k] + "18", border: `1px solid ${statusColor[k]}44`, borderRadius: 10, padding: "12px 16px" }}>
+                <div style={{ fontSize: 30, fontWeight: 900, color: statusColor[k] }}>{v}</div>
+                <div style={{ fontSize: 10, color: statusColor[k], fontWeight: 800, letterSpacing: "0.08em" }}>{statusLabel[k]}</div>
+              </div>
+            ))}
+            <div style={{ flex: 2, minWidth: 180, background: C.surfaceUp, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 16px" }}>
+              <div style={{ fontSize: 11, color: C.textMuted, fontWeight: 700, marginBottom: 4 }}>Period 2 · 8 students · 6.RP.A.1 · Lesson 4</div>
+              <div style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.6 }}>Exit ticket data feeds into targeted support recommendations and forward-looking proficiency estimates. Future state: automated pipeline into Lesson 5 gate inputs.</div>
+            </div>
+          </div>
+
+          {/* misunderstanding prevalence */}
+          <Card style={{ marginBottom: 16 }}>
+            <SectionLabel>Misunderstanding Prevalence — This Lesson</SectionLabel>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {miscPrevalence.map(({ name, count, color }) => {
+                const pct = Math.round((count / students.length) * 100);
+                return (
+                  <div key={name} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ flex: 1, background: C.surfaceUp, borderRadius: 4, height: 22, overflow: "hidden", position: "relative" }}>
+                      <div style={{ width: `${Math.max(pct, 0)}%`, height: "100%", background: color, borderRadius: 4, display: "flex", alignItems: "center", paddingLeft: 8 }}>
+                        {pct > 20 && <span style={{ color: "#0D1117", fontSize: 10, fontWeight: 700 }}>{count}/{students.length}</span>}
+                      </div>
+                    </div>
+                    <div style={{ color: C.textMuted, fontSize: 12, minWidth: 220 }}>{name}</div>
+                    <div style={{ color, fontWeight: 800, fontSize: 13, minWidth: 36 }}>{pct}%</div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+
+          {/* student descriptors */}
+          <Card style={{ marginBottom: 16 }}>
+            <SectionLabel>Where Each Student Is</SectionLabel>
+            <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 12 }}>Click any student to open their full knowledge trace.</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {students.map((s, i) => (
+                <div key={i} onClick={() => { setSelectedStudent(s); setTab("student"); }}
+                  style={{ cursor: "pointer", padding: "12px 14px", borderRadius: 8, background: C.surfaceUp, border: `1px solid ${C.border}`, borderLeft: `3px solid ${statusColor[s.status]}`, transition: "all 0.15s" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <span style={{ color: C.accent, fontWeight: 700, fontSize: 13, textDecoration: "underline" }}>{s.name}</span>
+                      <span style={{ background: statusColor[s.status] + "22", color: statusColor[s.status], border: `1px solid ${statusColor[s.status]}44`, borderRadius: 4, padding: "2px 8px", fontSize: 10, fontWeight: 800 }}>{statusLabel[s.status]}</span>
+                      {s.module && <Tag small color={C.amber}>Module {s.module}</Tag>}
+                    </div>
+                    <span style={{ color: C.textDim, fontSize: 11 }}>View trace →</span>
+                  </div>
+                  <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.6 }}>{s.descriptor}</div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* output summary */}
+          <Card style={{ border: `1px solid ${C.accent}44`, background: C.accentDim }}>
+            <SectionLabel>Complete Pipeline Output — 10 Documents</SectionLabel>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {[
+                { label: "Lesson Report", tag: "JSX + DOCX", color: C.accent },
+                { label: "Clean Teacher Lesson", tag: "DOCX", color: C.blue },
+                { label: "Annotated Reviewer Lesson", tag: "Background · DOCX", color: C.textMuted },
+                { label: "Exit Ticket + Teacher Key", tag: "DOCX", color: C.purple },
+                { label: "Decision Log", tag: "DOCX", color: C.textMuted },
+                { label: "Support Module A — Teacher + Student", tag: "2× DOCX", color: C.red },
+                { label: "Support Module B — Teacher + Student", tag: "2× DOCX", color: C.red },
+                { label: "Support Module C — Teacher + Student", tag: "2× DOCX", color: C.amber },
+                { label: "Support Module D — Teacher + Student", tag: "2× DOCX", color: C.purple },
+              ].map((item, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", background: C.surface, borderRadius: 6, border: `1px solid ${C.border}` }}>
+                  <span style={{ color: item.color }}>📄</span>
+                  <span style={{ color: C.text, fontSize: 12, flex: 1 }}>{item.label}</span>
+                  <Tag small color={item.color}>{item.tag}</Tag>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {tab === "student" && (
+        <div style={{ paddingTop: 20 }}>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
+            {students.map(s => (
+              <button key={s.name} onClick={() => setSelectedStudent(s)}
+                style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${selectedStudent?.name === s.name ? statusColor[s.status] + "88" : C.border}`, background: selectedStudent?.name === s.name ? statusColor[s.status] + "18" : C.surface, color: selectedStudent?.name === s.name ? statusColor[s.status] : C.textMuted, fontSize: 12, fontWeight: selectedStudent?.name === s.name ? 700 : 400, cursor: "pointer" }}>
+                {s.name}
+              </button>
+            ))}
+          </div>
+          {selectedStudent ? (
+            <StudentProfile student={selectedStudent} />
+          ) : (
+            <div style={{ textAlign: "center", padding: "48px 20px", color: C.textMuted, fontSize: 14 }}>
+              Select a student above to open their knowledge trace.
+            </div>
+          )}
+        </div>
+      )}
+
+      <Btn onClick={onNext} style={{ width: "100%", padding: 14, fontSize: 14, marginTop: 24 }}>
+        VIEW TARGETED SUPPORT MODULES →
+      </Btn>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAV BAR
+// ══════════════════════════════════════════════════════════════
+function NavBar({ screen, onScreen }) {
+  return (
+    <div style={{ position: "sticky", top: 0, zIndex: 100, background: C.bg + "F0", backdropFilter: "blur(14px)", borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 960, margin: "0 auto", display: "flex", alignItems: "center", height: 50, padding: "0 20px", gap: 0, overflowX: "auto" }}>
+        <div style={{ fontWeight: 900, fontSize: 16, color: C.accent, marginRight: 20, letterSpacing: "-0.02em", flexShrink: 0 }}>RESOLVE</div>
+        {SCREENS.map((label, i) => {
+          const active = screen === i;
+          const past = screen > i;
+          return (
+            <button key={i} onClick={() => onScreen(i)} style={{ background: "none", border: "none", borderBottom: active ? `2px solid ${C.accent}` : "2px solid transparent", cursor: "pointer", color: active ? C.accent : past ? C.text : C.textMuted, fontWeight: active ? 700 : 500, fontSize: 11, padding: "0 10px", height: "100%", display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap", marginBottom: -1, transition: "all 0.15s" }}>
+              {past && <span style={{ color: C.accent, fontSize: 9 }}>✓</span>}
+              <span>{i + 1}. {label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════
+// APP
+// ══════════════════════════════════════════════════════════════
+export default function App() {
+  const [screen, setScreen] = useState(0);
+  const topRef = useRef(null);
+
+  const goTo = (i) => {
+    setScreen(i);
+    if (topRef.current) topRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <div ref={topRef} style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "'Segoe UI', 'DM Sans', system-ui, sans-serif" }}>
+      <NavBar screen={screen} onScreen={goTo} />
+      {screen === 0 && <UploadScreen        onNext={() => goTo(1)} />}
+      {screen === 1 && <ProcessingScreen    onNext={() => goTo(2)} />}
+      {screen === 2 && <GateScreen          onNext={() => goTo(3)} />}
+      {screen === 3 && <LessonOutputsScreen onNext={() => goTo(4)} />}
+      {screen === 4 && <ExitTicketScreen    onNext={() => goTo(5)} />}
+      {screen === 5 && <FinalScreen         onNext={() => goTo(6)} />}
+      {screen === 6 && <TargetedSupportScreen onNext={() => goTo(7)} />}
+      {screen === 7 && <ResearcherScreen    />}
+    </div>
+  );
+}
