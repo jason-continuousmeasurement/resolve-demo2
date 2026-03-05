@@ -29,8 +29,9 @@ const SCREENS = [
   "Gate",
   "Lesson Outputs",
   "Exit Ticket",
-  "Remediation",
   "Report & Dashboard",
+  "Targeted Support",
+  "Researcher View",
 ];
 
 // ── tiny shared components ─────────────────────────────────────
@@ -67,10 +68,10 @@ function UploadScreen({ onNext }) {
       <div style={{ textAlign: "center", marginBottom: 36 }}>
         <div style={{ fontSize: 11, color: C.accent, fontWeight: 800, letterSpacing: "0.13em", marginBottom: 12 }}>RESOLVE · LESSON INTELLIGENCE PIPELINE</div>
         <h1 style={{ fontSize: 36, fontWeight: 900, color: C.text, margin: 0, lineHeight: 1.08, letterSpacing: "-0.02em" }}>
-          Drop a lesson.<br /><span style={{ color: C.accent }}>Get a diagnostic package.</span>
+          Drop a lesson.<br /><span style={{ color: C.accent }}>Get a diagnostically-aligned instructional package.</span>
         </h1>
         <p style={{ color: C.textMuted, marginTop: 14, fontSize: 14, lineHeight: 1.7, maxWidth: 480, margin: "14px auto 0" }}>
-          Resolve analyzes any HQIM mathematics lesson, rewrites it against a research-grounded clarification protocol, replaces the exit ticket with a psychometrically-designed diagnostic instrument, and generates targeted remediation modules — one pipeline, every lesson.
+          Resolve analyzes any HQIM mathematics lesson, rewrites it against a research-grounded cognitive architecture and clarification protocol, replaces the exit ticket with a psychometrically-designed diagnostic instrument, and generates targeted remediation modules — one pipeline, every lesson.
         </p>
       </div>
 
@@ -103,8 +104,8 @@ function UploadScreen({ onNext }) {
         {hoodOpen && (
           <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
             {[
-              { label: "Lesson Clarification Protocol", tag: "REQUIRED · BUILT-IN", color: C.accent, desc: "A decision-driven framework governing how objectives are composed, activities are classified (Prioritized / De-prioritized / Deleted), and exit tickets are evaluated. Baked into the pipeline — not something you configure." },
-              { label: "Content Specification", tag: "OPTIONAL · AUTO-GENERATED IF ABSENT", color: C.amber, desc: "A psychometric sub-topic specification for the standard: cognitive steps, misconception taxonomy with M-codes, difficulty level parameters (DL1–DL5), mastery definition, and hypothesized 3PL IRT priors. Produced by Agent 1 or authored by a human expert. If none is provided, Resolve builds a DRAFT specification from research literature and flags it for expert review." },
+              { label: "Lesson Clarification Protocol", tag: "REQUIRED · BUILT-IN", color: C.accent, desc: "A decision-driven framework governing how objectives are composed, activities are classified (Prioritized / De-prioritized / Deleted), and exit tickets are evaluated. Grounded in work-task observation and cognitive interviews with master and novice educators. Baked into the pipeline — not something you configure." },
+              { label: "Content Specification", tag: "OPTIONAL · AUTO-GENERATED IF ABSENT", color: C.amber, desc: "A fully-articulated standard-level specification spanning seven cognitive dimensions, each with its own coding structure — covering everything from cognitive architecture and misconception taxonomy to mastery criteria and psychometric priors. Produced by Agent 1 or authored by a human expert. If none is provided, Resolve builds a DRAFT specification from research literature and flags it for expert review." },
             ].map(item => (
               <div key={item.label} style={{ background: C.surfaceUp, borderRadius: 8, padding: "12px 14px", borderLeft: `3px solid ${item.color}` }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
@@ -145,7 +146,7 @@ function ProcessingScreen({ onNext }) {
 
   const phases = [
     { num: "Phase 1", name: "Objective Analysis", sub: "Compositionality test · meta-objective synthesis · success criteria", state: phase >= 1 ? "done" : phase === 0 ? "running" : "waiting" },
-    { num: "Phase 2", name: "Lesson Diagnostic", sub: "Cognitive step coverage · difficulty profile · goal achievement · choice menu", state: phase >= 2 ? "done" : phase === 1 ? "running" : "waiting" },
+    { num: "Phase 2", name: "Lesson Review", sub: "Cognitive step coverage · difficulty profile · goal achievement · choice menu", state: phase >= 2 ? "done" : phase === 1 ? "running" : "waiting" },
   ];
 
   const blocked = [
@@ -186,10 +187,10 @@ function ProcessingScreen({ onNext }) {
         <div style={{ border: `1px solid ${C.amber}66`, borderRadius: 10, padding: "16px 18px", background: C.amberDim, marginBottom: 20 }}>
           <div style={{ display: "flex", align: "center", gap: 10, marginBottom: 8 }}>
             <span style={{ fontSize: 16 }}>⏸</span>
-            <span style={{ color: C.amber, fontWeight: 800, fontSize: 13 }}>MANDATORY GATE — Human Decision Required</span>
+            <span style={{ color: C.amber, fontWeight: 800, fontSize: 13 }}>MANDATORY GATE — Educator Decision Point</span>
           </div>
           <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.65 }}>
-            Phases 1–2 complete. The Diagnostic Report is ready for curriculum lead review. Phases 3–6 are <strong style={{ color: C.text }}>blocked</strong> until a human reviews the analysis and releases the pipeline — with or without gate inputs. The agent will proceed on best judgment if no selections are made.
+            Phases 1–2 complete. A Lesson Report is ready for review. Phases 3–6 are <strong style={{ color: C.text }}>blocked</strong> until the educator reviews the analysis and releases the pipeline — selecting supports, adjusting difficulty, or choosing to proceed with no modifications. The agent will proceed on best judgment if no selections are made.
           </div>
         </div>
       )}
@@ -207,7 +208,7 @@ function ProcessingScreen({ onNext }) {
       </div>
 
       <Btn onClick={onNext} disabled={phase < 2} style={{ width: "100%", padding: 14, fontSize: 14 }}>
-        {phase < 2 ? "Analyzing lesson..." : "REVIEW DIAGNOSTIC REPORT + RELEASE GATE →"}
+        {phase < 2 ? "Analyzing lesson..." : "REVIEW LESSON REPORT + RELEASE GATE →"}
       </Btn>
       <style>{`@keyframes spin { from{transform:rotate(0deg)}to{transform:rotate(360deg)} }`}</style>
     </div>
@@ -260,7 +261,7 @@ function GateScreen({ onNext }) {
   const choiceMenu = [
     { id: "A", label: "Strengthen Step 4 coverage", desc: "No activity directly develops part-to-whole distinction. Modify Activity 1 to include a coordination task, or replace de-prioritized Cool-Down with a new discrimination activity.", tradeoff: "Adds ~5 min; requires Cool-Down replacement." },
     { id: "B", label: "Adjust difficulty gradient", desc: "Activity 2 jumps from DL2 to DL3–4 without an intermediate step. Shift Activity 2 to DL2–3 by reducing contextual load while preserving cognitive step coverage.", tradeoff: "Reduces stretch for high-readiness students." },
-    { id: "C", label: "Increase misconception-surfacing", desc: "No activity currently creates conditions where additive comparison (M1, gateway) produces a detectably wrong answer. Adjust number selection in Activity 1.", tradeoff: "Minimal time impact; number selection change only." },
+    { id: "C", label: "Increase misconception-surfacing", desc: "No activity currently creates conditions where subtracting instead of comparing (the gateway misunderstanding) produces a detectably wrong answer. Adjust number selection in Activity 1.", tradeoff: "Minimal time impact; number selection change only." },
     { id: "D", label: "Leave as-is, flag for teacher awareness", desc: "Accept current lesson structure with annotated escalation flags. Step 4 gap noted in Teacher Report.", tradeoff: "Step 4 gap persists; teacher awareness is the mitigation." },
   ];
 
@@ -270,9 +271,9 @@ function GateScreen({ onNext }) {
     <div style={{ maxWidth: 820, margin: "0 auto", padding: "32px 20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 22, flexWrap: "wrap", gap: 12 }}>
         <div>
-          <SectionLabel>Human Decision Gate</SectionLabel>
-          <h2 style={{ color: C.text, fontSize: 22, margin: 0, fontWeight: 800 }}>Teacher Diagnostic Report</h2>
-          <div style={{ color: C.textMuted, fontSize: 13, marginTop: 4 }}>6.RP.A.1 · Lesson 4 · Review lesson analysis, then release pipeline</div>
+          <SectionLabel>Educator Decision Gate</SectionLabel>
+          <h2 style={{ color: C.text, fontSize: 22, margin: 0, fontWeight: 800 }}>Lesson Report</h2>
+          <div style={{ color: C.textMuted, fontSize: 13, marginTop: 4 }}>6.RP.A.1 · Lesson 4 · Review lesson report, then release pipeline</div>
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <Tag color={C.amber}>⏸ PIPELINE PAUSED</Tag>
@@ -280,9 +281,30 @@ function GateScreen({ onNext }) {
         </div>
       </div>
 
-      {/* tabs — Coverage / Difficulty / Goal Achievement / Teacher Report */}
+      {/* meta-objective + thinking steps — always visible */}
+      <Card style={{ marginBottom: 16, borderLeft: `4px solid ${C.accent}` }}>
+        <div style={{ fontSize: 10, color: C.accent, fontWeight: 800, letterSpacing: "0.1em", marginBottom: 8 }}>WHAT THIS LESSON IS REALLY ABOUT</div>
+        <div style={{ color: C.text, fontSize: 14, fontWeight: 700, lineHeight: 1.5, marginBottom: 14 }}>
+          Students will identify when two quantities are in a ratio relationship and describe it using "for every" language and colon notation.
+        </div>
+        <div style={{ fontSize: 10, color: C.textMuted, fontWeight: 800, letterSpacing: "0.1em", marginBottom: 10 }}>TO SUCCEED, STUDENTS NEED TO NAVIGATE FIVE THINGS</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 0, overflowX: "auto", paddingBottom: 4 }}>
+          {cogStepsPlain.map((step, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+              <div style={{ background: C.surfaceUp, border: `1px solid ${C.border}`, borderRadius: 7, padding: "8px 10px", minWidth: 110, maxWidth: 130, textAlign: "center" }}>
+                <div style={{ width: 20, height: 20, borderRadius: "50%", background: C.accent, color: "#0D1117", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>{i + 1}</div>
+                <div style={{ color: C.text, fontSize: 10, fontWeight: 700, lineHeight: 1.3, marginBottom: 3 }}>{step.label}</div>
+                <div style={{ color: C.textMuted, fontSize: 9, lineHeight: 1.35 }}>{step.desc}</div>
+              </div>
+              {i < cogStepsPlain.length - 1 && <div style={{ color: C.accent, fontSize: 14, padding: "0 3px", flexShrink: 0 }}>→</div>}
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* tabs — Coverage / Difficulty / Goal Achievement */}
       <div style={{ display: "flex", gap: 0, marginBottom: 0, borderBottom: `1px solid ${C.border}` }}>
-        {[["coverage","Coverage Matrix"],["difficulty","Difficulty Profile"],["achievement","Goal Achievement"],["teacherreport","Teacher Report"]].map(([id, label]) => (
+        {[["coverage","Coverage Matrix"],["difficulty","Difficulty Profile"],["achievement","Goal Achievement"]].map(([id, label]) => (
           <button key={id} onClick={() => setActiveTab(id)} style={{ padding: "9px 16px", background: "none", border: "none", borderBottom: activeTab === id ? `2px solid ${C.accent}` : "2px solid transparent", color: activeTab === id ? C.accent : C.textMuted, fontWeight: activeTab === id ? 700 : 500, fontSize: 12, cursor: "pointer", marginBottom: -1, whiteSpace: "nowrap" }}>
             {label}
           </button>
@@ -322,17 +344,17 @@ function GateScreen({ onNext }) {
                 </tbody>
               </table>
             </div>
-            <div style={{ marginTop: 10, fontSize: 11, color: C.textMuted }}><span style={{ color: C.red }}>⚠</span> Step 4 (part-to-whole distinction) has no Direct coverage. Step 2 (multiplicative relationship) covered by Activity 1 only — no redundancy.</div>
+            <div style={{ marginTop: 10, fontSize: 11, color: C.textMuted }}><span style={{ color: C.red }}>⚠</span> "Know what's being compared to what" has no direct coverage in any activity. "See it as for every, not more than" is covered by Activity 1 only — no backup if students miss it.</div>
           </div>
         )}
 
         {activeTab === "difficulty" && (
           <div>
-            <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 12 }}>Difficulty parameters from content spec DL1–DL5. Computational difficulty ≠ cognitive demand.</div>
+            <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 12 }}>How the numbers, context, and type of thinking shift across activities. Computational difficulty is not the same as cognitive demand.</div>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
               <thead>
                 <tr style={{ background: C.surfaceUp }}>
-                  {["Activity","DL Range","Number Properties","Rep. Demand","Context","Cognitive Demand"].map(h => (
+                  {["Activity","Number Properties","Rep. Demand","Context","Cognitive Demand"].map(h => (
                     <th key={h} style={{ padding: "8px 10px", textAlign: "left", color: C.textMuted, border: `1px solid ${C.border}` }}>{h}</th>
                   ))}
                 </tr>
@@ -341,7 +363,6 @@ function GateScreen({ onNext }) {
                 {diffProfile.map((row, i) => (
                   <tr key={i} style={{ background: i % 2 === 0 ? C.surface : C.surfaceUp }}>
                     <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: C.text, fontWeight: 600 }}>{row.act}</td>
-                    <td style={{ padding: "8px 10px", border: `1px solid ${C.border}` }}><Tag small color={row.dl.includes("3") || row.dl.includes("4") ? C.amber : C.accent}>{row.dl}</Tag></td>
                     <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: C.textMuted }}>{row.numProp}</td>
                     <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: C.textMuted }}>{row.rep}</td>
                     <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: C.textMuted }}>{row.context}</td>
@@ -350,16 +371,16 @@ function GateScreen({ onNext }) {
                 ))}
               </tbody>
             </table>
-            <div style={{ marginTop: 10, fontSize: 11, color: C.textMuted }}><span style={{ color: C.amber }}>⚠</span> DL jump from Activity 1 (DL2) to Activity 2 (DL3–4) without intermediate step. Cool-Down reversal to DL1 noted.</div>
+            <div style={{ marginTop: 10, fontSize: 11, color: C.textMuted }}><span style={{ color: C.amber }}>⚠</span> Activity 2 introduces non-integer numbers and a novel context at the same time — a bigger jump than Activity 1 suggests. The Cool-Down steps back to simple numbers without adding new thinking.</div>
           </div>
         )}
 
         {activeTab === "achievement" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
-              { dim: "Conceptual", color: C.blue, pct: 55, note: "Step 2 (multiplicative reasoning) covered in Activity 1 only. No activity explicitly confronts additive comparison misconception (M1, gateway)." },
-              { dim: "Procedural", color: C.accent, pct: 80, note: "Ratio notation practice adequate in Activities 1–2. Multiple representations present but not systematically translated." },
-              { dim: "Applied", color: C.purple, pct: 60, note: "Familiar contexts dominate. Activity 2 provides novel context but is de-prioritized due to DL jump. Part-to-whole application absent." },
+              { dim: "Conceptual", color: C.blue, pct: 55, note: "The core shift — seeing a ratio as multiplicative rather than additive — is covered in Activity 1 only. No activity explicitly puts students in a position where subtracting instead of comparing gives a wrong answer." },
+              { dim: "Procedural", color: C.accent, pct: 80, note: "Ratio notation practice is adequate across Activities 1–2. Multiple representations are present but not systematically translated between." },
+              { dim: "Applied", color: C.purple, pct: 60, note: "Familiar contexts dominate. Activity 2 provides a novel context but the difficulty jump may make it inaccessible for students who aren't yet solid on the core idea. Part-to-whole application is absent." },
             ].map(d => (
               <div key={d.dim} style={{ background: C.surfaceUp, borderRadius: 8, padding: "12px 14px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
@@ -372,154 +393,63 @@ function GateScreen({ onNext }) {
                 <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.6 }}>{d.note}</div>
               </div>
             ))}
-            <div style={{ fontSize: 11, color: C.textMuted, padding: "8px 12px", background: C.surface, borderRadius: 6, border: `1px solid ${C.border}` }}>
-              <strong style={{ color: C.text }}>Efficiency:</strong> ~60% of instructional time on activities directly developing the meta-objective. Cool-Down (reflection prompt only) contributes no diagnostic signal and will be replaced by Diagnostic ET.
+              <div style={{ fontSize: 11, color: C.textMuted, padding: "8px 12px", background: C.surface, borderRadius: 6, border: `1px solid ${C.border}` }}>
+              <strong style={{ color: C.text }}>Efficiency:</strong> ~60% of instructional time on activities directly developing the lesson goal. The Cool-Down (reflection prompt only) contributes no useful information about what students understood — it will be replaced by the diagnostic exit ticket.
             </div>
           </div>
         )}
 
-        {activeTab === "teacherreport" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            {/* lesson goal */}
-            <div style={{ background: C.accentDim, border: `1px solid ${C.accent}44`, borderRadius: 8, padding: "14px 16px" }}>
-              <div style={{ fontSize: 10, color: C.accent, fontWeight: 800, letterSpacing: "0.1em", marginBottom: 8 }}>TODAY'S LESSON GOAL</div>
-              <div style={{ color: C.text, fontSize: 14, fontWeight: 700, lineHeight: 1.5, marginBottom: 10 }}>
-                Students will identify when two quantities are in a ratio relationship and describe it using "for every" language and colon notation.
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-                {["Students can spot a ratio relationship when they see one","Students can write it two ways: 3:5 and 'for every 3 cups of flour, 5 cups of oats'","Students know whether a ratio compares part-to-part or part-to-whole","Students can explain what a given ratio means in context"].map((sc, i) => (
-                  <div key={i} style={{ display: "flex", gap: 7, alignItems: "flex-start", background: C.surface, borderRadius: 5, padding: "6px 9px" }}>
-                    <span style={{ color: C.accent, fontSize: 11, flexShrink: 0 }}>✓</span>
-                    <span style={{ color: C.textMuted, fontSize: 11, lineHeight: 1.4 }}>{sc}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* thinking step flow */}
-            <div>
-              <div style={{ fontSize: 11, color: C.textMuted, fontWeight: 700, marginBottom: 8 }}>HOW STUDENTS BUILD UNDERSTANDING</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 0, overflowX: "auto", paddingBottom: 4 }}>
-                {cogStepsPlain.map((step, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-                    <div style={{ background: C.surfaceUp, border: `1px solid ${C.border}`, borderRadius: 7, padding: "8px 10px", minWidth: 110, maxWidth: 130, textAlign: "center" }}>
-                      <div style={{ width: 20, height: 20, borderRadius: "50%", background: C.accent, color: "#0D1117", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>{i + 1}</div>
-                      <div style={{ color: C.text, fontSize: 10, fontWeight: 700, lineHeight: 1.3, marginBottom: 3 }}>{step.label}</div>
-                      <div style={{ color: C.textMuted, fontSize: 9, lineHeight: 1.35 }}>{step.desc}</div>
-                    </div>
-                    {i < cogStepsPlain.length - 1 && <div style={{ color: C.accent, fontSize: 14, padding: "0 3px", flexShrink: 0 }}>→</div>}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* activity flow */}
-            <div>
-              <div style={{ fontSize: 11, color: C.textMuted, fontWeight: 700, marginBottom: 8 }}>WHAT CHANGED AND WHY</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                {actFlow.map((act, i) => (
-                  <div key={i} style={{ display: "flex", gap: 10, padding: "9px 12px", borderRadius: 7, background: C.surfaceUp, borderLeft: `3px solid ${actStatusColor[act.status]}` }}>
-                    <Tag small color={actStatusColor[act.status]}>{act.status.toUpperCase()}</Tag>
-                    <div>
-                      <span style={{ color: C.text, fontWeight: 700, fontSize: 12 }}>{act.name}</span>
-                      <span style={{ color: C.textMuted, fontSize: 11, marginLeft: 8 }}>{act.time}</span>
-                      <div style={{ color: C.textMuted, fontSize: 11, marginTop: 3, lineHeight: 1.5 }}>{act.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* misconception callout */}
-            <div style={{ border: `1px solid ${C.red}55`, borderRadius: 8, padding: "12px 14px", background: C.redDim }}>
-              <div style={{ fontSize: 10, color: C.red, fontWeight: 800, letterSpacing: "0.1em", marginBottom: 7 }}>👁 WATCH FOR THIS</div>
-              <div style={{ color: C.text, fontWeight: 700, fontSize: 13, marginBottom: 6 }}>"There are 2 more oats than flour" — the subtraction trap</div>
-              <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.6, marginBottom: 8 }}>
-                Some students will subtract the two quantities instead of describing the relationship. This isn't carelessness — they genuinely see it as a comparison problem. The fix is helping them see why the difference doesn't capture the <em style={{ color: C.text }}>relationship</em>.
-              </div>
-              <div style={{ background: C.surface, borderRadius: 6, padding: "8px 12px" }}>
-                <div style={{ fontSize: 10, color: C.red, fontWeight: 700, marginBottom: 3 }}>IN-THE-MOMENT QUESTION</div>
-                <div style={{ color: C.text, fontSize: 12, fontStyle: "italic" }}>"If I doubled the recipe, would the difference change? What about the ratio?"</div>
-              </div>
-            </div>
-          </div>
-        )}
       </Card>
 
-      {/* choice menu */}
-      <Card style={{ marginBottom: 16 }}>
-        <SectionLabel>Lesson Structure — Choose a Direction</SectionLabel>
+      {/* unified choice menu */}
+      <Card style={{ marginBottom: 20 }}>
+        <SectionLabel>Choose a Direction</SectionLabel>
         <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 12 }}>Select one option to direct the clarification. Pipeline proceeds on best judgment if no selection is made.</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {choiceMenu.map(c => (
-            <div key={c.id} onClick={() => setSelectedChoice(c.id)} style={{ cursor: "pointer", padding: "11px 14px", borderRadius: 8, border: `1px solid ${selectedChoice === c.id ? C.accent + "88" : C.border}`, background: selectedChoice === c.id ? C.accentDim : C.surfaceUp, transition: "all 0.2s" }}>
-              <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${selectedChoice === c.id ? C.accent : C.textDim}`, background: selectedChoice === c.id ? C.accent : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 9, color: "#0D1117", fontWeight: 800 }}>
-                  {selectedChoice === c.id ? "✓" : ""}
-                </div>
-                <div>
-                  <div style={{ color: selectedChoice === c.id ? C.accent : C.text, fontWeight: 700, fontSize: 13 }}>Option {c.id}: {c.label}</div>
-                  <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.5, marginTop: 3 }}>{c.desc}</div>
-                  <div style={{ fontSize: 11, color: C.amber, marginTop: 3 }}>Tradeoff: {c.tradeoff}</div>
+          {[
+            { id: "A", label: "Fill the gap in part-to-whole coverage", desc: "No activity directly develops the part-to-part vs. part-to-whole distinction. We'll modify Activity 1 to include a short decision task, or replace the Cool-Down with a new discrimination activity.", tradeoff: "Adds ~5 min; requires Cool-Down replacement.", extra: null },
+            { id: "B", label: "Ease the difficulty jump", desc: "Activity 2 introduces harder numbers and a new context at the same time. We'll simplify the numbers and setting in Activity 2 without changing the thinking it demands.", tradeoff: "Reduces stretch for students who are ready for more.", extra: "difficulty" },
+            { id: "C", label: "Surface the subtraction trap", desc: "No activity currently puts students in a position where subtracting instead of comparing gives a detectably wrong answer. We'll adjust number selection in Activity 1 so that error is visible.", tradeoff: "Minimal time impact — number selection change only.", extra: "misconception" },
+            { id: "D", label: "Leave as-is, flag for teacher awareness", desc: "Accept the current lesson structure with notes for the teacher. The gap in part-to-whole coverage is flagged in the lesson report.", tradeoff: "The gap persists; teacher awareness is the mitigation.", extra: null },
+          ].map(c => (
+            <div key={c.id}>
+              <div onClick={() => setSelectedChoice(c.id)} style={{ cursor: "pointer", padding: "11px 14px", borderRadius: 8, border: `1px solid ${selectedChoice === c.id ? C.accent + "88" : C.border}`, background: selectedChoice === c.id ? C.accentDim : C.surfaceUp, transition: "all 0.2s" }}>
+                <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                  <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${selectedChoice === c.id ? C.accent : C.textDim}`, background: selectedChoice === c.id ? C.accent : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 9, color: "#0D1117", fontWeight: 800 }}>
+                    {selectedChoice === c.id ? "✓" : ""}
+                  </div>
+                  <div>
+                    <div style={{ color: selectedChoice === c.id ? C.accent : C.text, fontWeight: 700, fontSize: 13 }}>Option {c.id}: {c.label}</div>
+                    <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.5, marginTop: 3 }}>{c.desc}</div>
+                    <div style={{ fontSize: 11, color: C.amber, marginTop: 3 }}>Tradeoff: {c.tradeoff}</div>
+                  </div>
                 </div>
               </div>
+              {/* inline expanded UI for B */}
+              {c.extra === "difficulty" && selectedChoice === "B" && (
+                <div style={{ marginTop: 4, fontSize: 12, color: C.textMuted, background: C.blueDim, borderRadius: 6, padding: "8px 12px", border: `1px solid ${C.blue}33` }}>
+                  <span style={{ color: C.blue, fontWeight: 700 }}>Active:</span> Activity 2 shifted to smaller, integer values in a familiar context. The reasoning the activity demands is unchanged — only the numbers and setting are easier.
+                </div>
+              )}
+              {/* inline expanded UI for C */}
+              {c.extra === "misconception" && selectedChoice === "C" && (
+                <div style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 6 }}>
+                  {[
+                    ["Subtracting instead of comparing","60% need significant support · 25% need some support · 15% solid", C.red],
+                    ["Confusing part-to-part and part-to-whole","40% need significant support · 35% need some support · 25% solid", C.amber],
+                  ].map(([name, dist, col], i) => (
+                    <div key={i} style={{ background: C.surface, borderRadius: 6, padding: "8px 10px", display: "flex", gap: 10, alignItems: "flex-start", border: `1px solid ${col}33` }}>
+                      <div>
+                        <div style={{ color: C.text, fontSize: 12, fontWeight: 600 }}>{name}</div>
+                        <div style={{ color: C.textMuted, fontSize: 11, marginTop: 2 }}>{dist}</div>
+                      </div>
+                    </div>
+                  ))}
+                  <div style={{ fontSize: 11, color: C.amber, lineHeight: 1.5 }}>Based on prior exit ticket data. Pipeline will adjust number selection so these misunderstandings produce detectably wrong answers — making them visible and addressable during instruction.</div>
+                </div>
+              )}
             </div>
           ))}
-        </div>
-      </Card>
-
-      {/* additional modifications */}
-      <Card style={{ marginBottom: 20 }}>
-        <SectionLabel>Additional Modifications</SectionLabel>
-        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 14 }}>Both off by default. Pipeline operates from content spec and lesson analysis alone if not activated.</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {/* computational difficulty */}
-          <div style={{ background: C.surfaceUp, borderRadius: 8, padding: "12px 14px", border: `1px solid ${dlAdjust ? C.blue + "66" : C.border}` }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: dlAdjust ? 10 : 0 }}>
-              <div>
-                <div style={{ color: C.text, fontWeight: 600, fontSize: 13 }}>Shift Computational Difficulty</div>
-                <div style={{ color: C.textMuted, fontSize: 11, marginTop: 2 }}>Adjust the numbers and context students work with — without changing the underlying thinking the activity demands.</div>
-              </div>
-              <div onClick={() => setDlAdjust(v => !v)} style={{ width: 38, height: 22, borderRadius: 11, background: dlAdjust ? C.blue : C.textDim, cursor: "pointer", position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 14 }}>
-                <div style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff", position: "absolute", top: 3, left: dlAdjust ? 19 : 3, transition: "left 0.2s" }} />
-              </div>
-            </div>
-            {dlAdjust && (
-              <div style={{ fontSize: 12, color: C.textMuted, background: C.blueDim, borderRadius: 6, padding: "8px 12px", border: `1px solid ${C.blue}33` }}>
-                <span style={{ color: C.blue, fontWeight: 700 }}>Active:</span> Activity 2 shifted to smaller, integer values in a familiar context. The reasoning the activity demands is unchanged — only the numbers and setting are easier. Cognitive step coverage preserved.
-              </div>
-            )}
-          </div>
-
-          {/* misconception support */}
-          <div style={{ background: C.surfaceUp, borderRadius: 8, padding: "12px 14px", border: `1px solid ${mCodeActive ? C.purple + "66" : C.border}` }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: mCodeActive ? 10 : 0 }}>
-              <div>
-                <div style={{ color: C.text, fontWeight: 600, fontSize: 13 }}>Provide Misconception Support</div>
-                <div style={{ color: C.textMuted, fontSize: 11, marginTop: 2 }}>Flag which student misunderstandings are most active so the lesson design surfaces and confronts them directly.</div>
-              </div>
-              <div onClick={() => setMCodeActive(v => !v)} style={{ width: 38, height: 22, borderRadius: 11, background: mCodeActive ? C.purple : C.textDim, cursor: "pointer", position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 14 }}>
-                <div style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff", position: "absolute", top: 3, left: mCodeActive ? 19 : 3, transition: "left 0.2s" }} />
-              </div>
-            </div>
-            {mCodeActive && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {[
-                  ["M1","Treating ratios as differences","60% need significant support · 25% need some support · 15% solid", C.red],
-                  ["M3","Confusing part-to-part and part-to-whole","40% need significant support · 35% need some support · 25% solid", C.amber],
-                ].map(([code, name, dist, col]) => (
-                  <div key={code} style={{ background: C.surface, borderRadius: 6, padding: "8px 10px", display: "flex", gap: 10, alignItems: "flex-start" }}>
-                    <Tag small color={col}>{code}</Tag>
-                    <div>
-                      <div style={{ color: C.text, fontSize: 12, fontWeight: 600 }}>{name}</div>
-                      <div style={{ color: C.textMuted, fontSize: 11, marginTop: 2 }}>{dist}</div>
-                    </div>
-                  </div>
-                ))}
-                <div style={{ fontSize: 11, color: C.amber, marginTop: 2, lineHeight: 1.5 }}>Based on prior exit ticket data. Pipeline will adjust number selection so these misunderstandings produce detectably wrong answers — making them visible and addressable during instruction.</div>
-              </div>
-            )}
-          </div>
         </div>
       </Card>
 
@@ -742,10 +672,11 @@ function LessonOutputsScreen({ onNext }) {
 // ══════════════════════════════════════════════════════════════
 function ExitTicketScreen({ onNext }) {
   const [view, setView] = useState("student");
+  const [cdaOpen, setCdaOpen] = useState(false);
 
   const items = [
     {
-      id: "CR", label: "D1 · Gateway Screen", type: "Constructed Response", dl: "DL2", sc: "SC(b)",
+      id: "CR", label: "Item 1", type: "Constructed Response", dl: "DL2", sc: "SC(b)",
       note: "CR placed first to capture authentic student reasoning before MC options scaffold recognition.",
       stem: "A recipe uses 3 cups of flour and 5 cups of oats. Write two different statements that describe the ratio relationship between the flour and oats. Use a different notation for each statement.",
       errorPatterns: [
@@ -756,25 +687,25 @@ function ExitTicketScreen({ onNext }) {
       ]
     },
     {
-      id: "MC-D2", label: "D2 · Baseline", type: "Multiple Choice", dl: "DL1", sc: "SC(a)",
+      id: "MC-D2", label: "Item 2", type: "Multiple Choice", dl: "DL1", sc: "SC(a)",
       note: "Straightforward item — all strategies converge if understanding is intact. Establishes whether basic skill is present.",
       stem: "A bag contains 4 red marbles and 6 blue marbles. Which statement correctly describes a ratio relationship?",
       options: [
-        { letter: "A", text: "There are 2 more blue marbles than red marbles.", code: "M1", label: "Additive Comparison — GATEWAY", correct: false },
-        { letter: "B", text: "For every 4 red marbles, there are 6 blue marbles.", code: "—", label: "Correct key", correct: true },
-        { letter: "C", text: "The ratio is 10.", code: "M2", label: "Foundational Collapse — ratio reduced to total count", correct: false },
-        { letter: "D", text: "4 out of 10 marbles are red.", code: "M3", label: "Part-Whole Confusion — correct quantity, wrong relationship type", correct: false },
+        { letter: "A", text: "There are 2 more blue marbles than red marbles.", code: "M1", label: "Subtracting instead of comparing — treats this as a difference question", correct: false },
+        { letter: "B", text: "For every 4 red marbles, there are 6 blue marbles.", code: "—", label: "Correct — multiplicative relationship expressed as ratio language", correct: true },
+        { letter: "C", text: "The ratio is 10.", code: "M2", label: "Single-number collapse — loses the two-quantity structure", correct: false },
+        { letter: "D", text: "4 out of 10 marbles are red.", code: "M3", label: "Part-to-whole confusion — correct quantity but wrong relationship type", correct: false },
       ]
     },
     {
-      id: "MC-D3", label: "D3 · Targeted Discrimination", type: "Multiple Choice", dl: "DL3", sc: "SC(c)",
-      note: "Engineered to discriminate M3 (part-whole confusion) from correct understanding. Numbers chosen so M3 and M4 errors produce distinct wrong answers.",
+      id: "MC-D3", label: "Item 3", type: "Multiple Choice", dl: "DL3", sc: "SC(c)",
+      note: "Numbers chosen so that each misunderstanding produces a distinct wrong answer — part-to-whole confusion, wrong order, and single-number errors are all separately detectable.",
       stem: "A class has 12 girls and 8 boys. What is the ratio of girls to the total number of students in the class?",
       options: [
-        { letter: "A", text: "3 : 2", code: "M3", label: "Part-Whole Confusion — part-to-part when part-to-whole requested", correct: false },
-        { letter: "B", text: "8 : 12", code: "M4", label: "Order Reversal — correct relationship type, wrong referent order", correct: false },
-        { letter: "C", text: "12 : 20", code: "—", label: "Correct key — total correctly identified as whole", correct: true },
-        { letter: "D", text: "20", code: "M2", label: "Foundational Collapse — ratio reduced to single total", correct: false },
+        { letter: "A", text: "3 : 2", code: "M3", label: "Part-to-whole confusion — student uses part-to-part when part-to-whole was asked", correct: false },
+        { letter: "B", text: "8 : 12", code: "M4", label: "Wrong order — correct relationship type but referent direction reversed", correct: false },
+        { letter: "C", text: "12 : 20", code: "—", label: "Correct — total correctly identified as the whole", correct: true },
+        { letter: "D", text: "20", code: "M2", label: "Single-number collapse — ratio reduced to a total count", correct: false },
       ]
     },
   ];
@@ -792,11 +723,39 @@ function ExitTicketScreen({ onNext }) {
 
   return (
     <div style={{ maxWidth: 820, margin: "0 auto", padding: "32px 20px" }}>
+
+      {/* CDA framing card — collapsable, always at top */}
+      <Card style={{ marginBottom: 20, borderLeft: `4px solid ${C.accent}` }}>
+        <div onClick={() => setCdaOpen(o => !o)} style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+          <div>
+            <div style={{ fontSize: 10, color: C.accent, fontWeight: 800, letterSpacing: "0.1em", marginBottom: 6 }}>WHAT MAKES THIS DIFFERENT</div>
+            <div style={{ color: C.text, fontSize: 13, fontWeight: 600, lineHeight: 1.5 }}>This is not a typical exit ticket. Most end-of-lesson checks produce a score. This instrument produces a <em style={{ color: C.accent }}>diagnosis</em> — a defensible claim about which specific, research-documented misunderstanding is driving a student's errors.</div>
+          </div>
+          <div style={{ color: C.accent, fontSize: 18, transition: "transform 0.2s", transform: cdaOpen ? "rotate(180deg)" : "none", flexShrink: 0, marginTop: 2 }}>⌄</div>
+        </div>
+        {cdaOpen && (
+          <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.75 }}>That defensibility comes from two things working together.</div>
+            <div style={{ background: C.surfaceUp, borderRadius: 8, padding: "12px 14px", borderLeft: `3px solid ${C.blue}` }}>
+              <div style={{ color: C.blue, fontWeight: 700, fontSize: 12, marginBottom: 5 }}>Item engineering off the cognitive specification</div>
+              <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.7 }}>Every item is constructed against the standard's cognitive architecture — the same specification that defines the learning steps, the misconception taxonomy, and the difficulty parameters. Wrong-answer options are not plausible distractors; they are predictions. Each one encodes a specific hypothesis about student thinking, with values and contexts chosen so that the target misunderstanding produces a numerically distinct, detectable wrong answer.</div>
+            </div>
+            <div style={{ background: C.surfaceUp, borderRadius: 8, padding: "12px 14px", borderLeft: `3px solid ${C.purple}` }}>
+              <div style={{ color: C.purple, fontWeight: 700, fontSize: 12, marginBottom: 5 }}>Deliberate compilation</div>
+              <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.7 }}>The five items are not interchangeable. They are sequenced and structured so that the <em style={{ color: C.text }}>pattern</em> of responses across items justifies a diagnostic claim that no single item could support alone. The instrument includes a quasi-Q matrix making explicit which misunderstanding is detectable on which item — the evidentiary basis for every diagnosis the instrument can return.</div>
+            </div>
+            <div style={{ background: C.accentDim, borderRadius: 8, padding: "10px 14px", border: `1px solid ${C.accent}33` }}>
+              <div style={{ color: C.accent, fontSize: 12, lineHeight: 1.65 }}>The result: a student's response profile maps to a specific misunderstanding, a severity level, and a targeted remediation module. <strong>Not a score. A next step.</strong></div>
+            </div>
+          </div>
+        )}
+      </Card>
+
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
         <div>
-          <SectionLabel>Phase 4 Output · Diagnostic Exit Ticket</SectionLabel>
+          <SectionLabel>Phase 4 Output · Exit Ticket</SectionLabel>
           <h2 style={{ color: C.text, fontSize: 22, margin: 0, fontWeight: 800 }}>Exit Ticket — 6.RP.A.1</h2>
-          <div style={{ color: C.textMuted, fontSize: 13, marginTop: 4 }}>~5 min · 1 CR + 4 MC · Diagnostic sandwich (D1 gateway → D2 baseline → D3–D4 targeted → D5 applied) · Showing 3 of 5 items</div>
+          <div style={{ color: C.textMuted, fontSize: 13, marginTop: 4 }}>~5 min · 1 constructed response + 4 multiple choice · Showing 3 of 5 items</div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           {["student","teacher"].map(v => (
@@ -816,12 +775,8 @@ function ExitTicketScreen({ onNext }) {
             <Card key={i}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, flexWrap: "wrap", gap: 6 }}>
                 <div style={{ display: "flex", gap: 6 }}>
-                  <Tag small color={C.blue}>{item.label}</Tag>
+                  <Tag small color={C.blue}>Item {i + 1}</Tag>
                   <Tag small color={C.purple}>{item.type}</Tag>
-                </div>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <Tag small color={C.textMuted}>{item.dl}</Tag>
-                  <Tag small>{item.sc}</Tag>
                 </div>
               </div>
               <div style={{ color: C.text, fontSize: 14, lineHeight: 1.65, marginBottom: 14, fontStyle: "italic" }}>{item.stem}</div>
@@ -877,7 +832,7 @@ function ExitTicketScreen({ onNext }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {items[0].errorPatterns.map((ep, i) => (
                 <div key={i} style={{ display: "flex", gap: 10, padding: "8px 12px", background: C.surfaceUp, borderRadius: 6, alignItems: "flex-start" }}>
-                  <Tag small color={ep.code.includes("M1") ? C.red : ep.code.includes("M3") ? C.amber : ep.code.includes("M4") ? C.purple : C.textMuted}>{ep.code.split(" ")[0]}</Tag>
+                  <Tag small color={ep.code.includes("M1") ? C.red : ep.code.includes("M3") ? C.amber : ep.code.includes("M4") ? C.purple : C.textMuted}>{ep.code.split("—")[1]?.trim() || ep.code}</Tag>
                   <div>
                     <div style={{ color: C.textMuted, fontSize: 11, fontFamily: "monospace" }}>{ep.response}</div>
                     <div style={{ color: C.textMuted, fontSize: 11, marginTop: 2 }}>{ep.note}</div>
@@ -920,9 +875,9 @@ function ExitTicketScreen({ onNext }) {
             <SectionLabel>Next-Lesson Readiness Classification</SectionLabel>
             {[
               { pattern: "CR correct + B + C + …", status: "READY", color: C.accent, note: "Full ratio language and part-whole distinction present." },
-              { pattern: "CR correct + B + A or D on D3", status: "READY WITH SUPPORT", color: C.amber, note: "Ratio language intact; part-whole confusion. Monitor in Lesson 5. Module C available." },
-              { pattern: "CR additive + A on D2", status: "NOT READY · M1", color: C.red, note: "Gateway misconception active. Assign Module A before Lesson 5. Do not advance." },
-              { pattern: "Any: single-number response", status: "NOT READY · M2", color: C.red, note: "Foundational Collapse. Assign Module B. Module A also recommended if M1 co-present." },
+              { pattern: "CR correct + B + A or D on D3", status: "READY WITH SUPPORT", color: C.amber, note: "Ratio language intact; part-to-whole confusion present. Monitor in Lesson 5. Support Module C available." },
+              { pattern: "CR additive + A on D2", status: "NOT READY", color: C.red, note: "Subtracting instead of comparing — gateway misunderstanding active. Assign Support Module A before Lesson 5. Do not advance." },
+              { pattern: "Any: single-number response", status: "NOT READY", color: C.red, note: "Treating the ratio as a single number. Assign Support Module B. Monitor for additive reasoning alongside." },
             ].map((r, i) => (
               <div key={i} style={{ display: "flex", gap: 12, marginBottom: 10, alignItems: "flex-start" }}>
                 <div style={{ minWidth: 130, padding: "4px 8px", background: r.color + "22", border: `1px solid ${r.color}44`, borderRadius: 6, textAlign: "center", fontSize: 10, fontWeight: 800, color: r.color, flexShrink: 0 }}>{r.status}</div>
@@ -943,89 +898,531 @@ function ExitTicketScreen({ onNext }) {
   );
 }
 
+
 // ══════════════════════════════════════════════════════════════
-// SCREEN 6 — REMEDIATION MODULES
+// SCREEN 7 — RESEARCHER VIEW
 // ══════════════════════════════════════════════════════════════
-function RemediationScreen({ onNext }) {
-  const modules = [
+function ResearcherScreen() {
+  const [psychOpen, setPsychOpen] = useState(false);
+  const [mlOpen, setMlOpen] = useState(false);
+
+  const pathwayNodes = [
+    { id: "prereq1", label: "Multiplicative comparison", standard: "4.OA.A", x: 60, y: 200, color: C.textMuted, type: "prereq" },
+    { id: "prereq2", label: "Fractions as division", standard: "5.NF.B", x: 60, y: 320, color: C.textMuted, type: "prereq" },
+    { id: "m1", label: "Subtracting instead\nof comparing", x: 220, y: 140, color: C.red, type: "misconception", severity: "Gateway" },
+    { id: "m2", label: "Ratio as\nsingle number", x: 220, y: 260, color: C.red, type: "misconception", severity: "High" },
+    { id: "current", label: "6.RP.A.1\nRatio Concepts", x: 380, y: 220, color: C.accent, type: "standard" },
+    { id: "m3", label: "Part-to-part vs\npart-to-whole", x: 380, y: 360, color: C.amber, type: "misconception", severity: "Medium" },
+    { id: "m4", label: "Wrong order", x: 380, y: 440, color: C.purple, type: "misconception", severity: "Low" },
+    { id: "rpa2", label: "6.RP.A.2\nUnit Rate", x: 560, y: 160, color: C.blue, type: "standard" },
+    { id: "rpa3", label: "6.RP.A.3\nEquivalent Ratios", x: 560, y: 300, color: C.blue, type: "standard" },
+    { id: "rp7", label: "7.RP.A\nProportional\nRelationships", x: 720, y: 220, color: C.purple, type: "standard" },
+  ];
+
+  const pathwayEdges = [
+    { from: "prereq1", to: "current", width: 2, color: C.textDim },
+    { from: "prereq2", to: "current", width: 2, color: C.textDim },
+    { from: "m1", to: "current", width: 3, color: C.red, label: "blocks" },
+    { from: "m2", to: "current", width: 2, color: C.red, label: "distorts" },
+    { from: "current", to: "rpa2", width: 3, color: C.accent },
+    { from: "current", to: "rpa3", width: 2, color: C.accent },
+    { from: "m3", to: "rpa2", width: 2, color: C.amber, label: "risk" },
+    { from: "m3", to: "rpa3", width: 1.5, color: C.amber, label: "risk" },
+    { from: "rpa2", to: "rp7", width: 3, color: C.blue },
+    { from: "rpa3", to: "rp7", width: 2, color: C.blue },
+  ];
+
+  const responseSequences = [
     {
-      letter: "A", color: C.red,
-      misconception: "M1 — Additive Comparison",
-      type: "G", typeName: "Gateway / Ontological",
-      severity: "HIGH",
-      severityRationale: "Blocks all subsequent learning. Student operates with a fundamentally different model — interprets ratio situations as subtraction problems. Must be resolved before M2–M5 can be reliably assessed.",
-      bundled: false,
-      approach: "Contrasting cases → Classification practice → Predictive application",
-      miniET: "2 items · Targeted misconception detectable on both · 3-outcome guide: RESOLVED / PARTIALLY RESOLVED / PERSISTS",
-      versions: ["Teacher Version (overview + facilitation notes + answer key + mini ET key)", "Student Version (clean activities + mini ET only)"],
-      constraint: "Cannot be bundled with any other module. Gateway misconceptions require focused, uninterrupted attention.",
-    },
-    {
-      letter: "B", color: C.red,
-      misconception: "M2 — Ratio as Single Number (Foundational Collapse)",
-      type: "F", typeName: "Foundational Collapse",
-      severity: "HIGH",
-      severityRationale: "Student treats the ratio as a total count, losing internal structure. Subsequent ratio procedures are meaningless without the two-quantity frame.",
-      bundled: false,
-      approach: "Build internal structure → Identify-and-write → Sort structured vs. collapsed",
-      miniET: "2 items · Collapsed-value answers must differ from all correct answers and from other M-code answers",
-      versions: ["Teacher Version", "Student Version"],
-      constraint: "Cannot be bundled with M1 (different failure steps). Standalone module required.",
-    },
-    {
-      letter: "C", color: C.amber,
-      misconception: "M3 — Part/Whole Confusion (PRIMARY) · M5 — Ratio as Fraction Only (SECONDARY)",
-      type: "S+R", typeName: "Structural Confusion + Representational Narrowness",
-      severity: "MEDIUM",
-      severityRationale: "M3 primary: foundational concept present but part-to-part / part-to-whole undifferentiated. M5 bundled as secondary: R-type misconceptions are often sub-components of S-type. Bundling rule 2 applies.",
-      bundled: true,
-      approach: "Same situation, two structures → Classify and produce (alternating) → Novel context production",
-      miniET: "2 items · M3 and M5 both detectable · M1 gateway also tested as unexpected misconception check",
-      versions: ["Teacher Version", "Student Version"],
-      constraint: "Bundled because M5 (fraction-only representation) is a natural sub-component of M3's structural confusion.",
-    },
-    {
-      letter: "D", color: C.purple,
-      misconception: "M4 — Order Reversal (Coordination Error)",
-      type: "C", typeName: "Coordination Error",
-      severity: "LOW-MEDIUM",
-      severityRationale: "Mathematical reasoning intact. Student understands ratio as a relationship but fails to coordinate referent direction. Often resolved with procedural scaffolding.",
-      bundled: false,
-      approach: "Demonstrate non-commutativity → Deliberate practice with mismatched presentation → Bidirectional translation",
-      miniET: "2 items · Reversed answer must differ numerically from correct answer (no palindromic values)",
-      versions: ["Teacher Version", "Student Version"],
-      constraint: "Numbers chosen so reversal produces a detectably different answer. Symmetric values explicitly avoided.",
+      student: "Diego R.", status: "not-ready",
+      note: "Full record — all labeling dimensions shown per item",
+      items: [
+        {
+          label: "CR", response: "There are 2 more oats than flour",
+          correct: false,
+          misconception_tags: ["Subtracting instead of comparing"],
+          cognitive_step: { n: 2, desc: "Identify relationship type — multiplicative vs. additive" },
+          difficulty: { level: "DL2", params: "Small integers · verbal context · familiar" },
+          prerequisite_tags: ["Multiplicative comparison (4.OA.A)"],
+          theta: { prior: -0.61, posterior: -0.74 },
+        },
+        {
+          label: "D2", response: "A — there are 2 more blue than red",
+          correct: false,
+          misconception_tags: ["Subtracting instead of comparing"],
+          cognitive_step: { n: 2, desc: "Identify relationship type — multiplicative vs. additive" },
+          difficulty: { level: "DL1", params: "Small integers · symbolic · familiar · identification demand" },
+          prerequisite_tags: ["Multiplicative comparison (4.OA.A)"],
+          theta: { prior: -0.74, posterior: -0.79 },
+        },
+        {
+          label: "D3", response: "C — selects difference (12−8=4) as the ratio",
+          correct: false,
+          misconception_tags: ["Subtracting instead of comparing", "Single-number collapse"],
+          cognitive_step: { n: 3, desc: "Produce ratio expression — coordinate both quantities" },
+          difficulty: { level: "DL3", params: "Non-integer context · multiple representations · novel context" },
+          prerequisite_tags: [],
+          theta: { prior: -0.79, posterior: -0.81 },
+        },
+        {
+          label: "D4", response: "B (correct) — selects 3:5",
+          correct: true,
+          misconception_tags: [],
+          cognitive_step: { n: 3, desc: "Produce ratio expression — coordinate both quantities" },
+          difficulty: { level: "DL2", params: "Small integers · colon notation only · familiar" },
+          prerequisite_tags: [],
+          theta: { prior: -0.81, posterior: -0.77 },
+          note: "Correct under low difficulty — success here is consistent with the gateway misconception still being active. High-difficulty items (DL3+) continue to elicit additive responses.",
+        },
+        {
+          label: "D5", response: "A — interprets ratio as a difference in an applied context",
+          correct: false,
+          misconception_tags: ["Subtracting instead of comparing"],
+          cognitive_step: { n: 5, desc: "Interpret ratio in applied context — irrelevant information present" },
+          difficulty: { level: "DL4", params: "Non-integer ratios · contextualised · irrelevant info present · interpretation demand" },
+          prerequisite_tags: ["Multiplicative comparison (4.OA.A)", "Fractions as division (5.NF.B)"],
+          theta: { prior: -0.77, posterior: -0.81 },
+        },
+      ]
     },
   ];
 
-  const typeColor = { G: C.red, F: C.red, "S+R": C.amber, S: C.amber, R: C.blue, C: C.purple };
+  const dataSchema = [
+    { field: "student_id",         type: "string",   desc: "Anonymized student identifier", group: "context" },
+    { field: "standard_code",      type: "string",   desc: "CCSSM standard addressed by this item (e.g. 6.RP.A.1)", group: "context" },
+    { field: "lesson_id",          type: "string",   desc: "Curriculum lesson identifier", group: "context" },
+    { field: "item_id",            type: "string",   desc: "Item position within instrument (D1–D5)", group: "context" },
+    { field: "response",           type: "string",   desc: "Student response — option selected or CR production", group: "context" },
+    { field: "misconception_tag",  type: "string[]", desc: "Misconception(s) the selected response is evidence for — defined in the content specification at item design time, before any data is collected", group: "label" },
+    { field: "cognitive_step",     type: "integer",  desc: "Which step in the standard's cognitive architecture this item targets (1–n) — locates the failure point within the reasoning chain, not just whether the item was correct", group: "label" },
+    { field: "difficulty_level",   type: "string",   desc: "Parameterized difficulty level (DL1–DL5) — encodes the specific conditions under which the student was tested: number properties, representational demand, contextual load, and cognitive demand type", group: "label" },
+    { field: "prerequisite_tag",   type: "string[]", desc: "Prerequisite skill(s) this item is sensitive to — enables cross-standard pathway inference and distinguishes prerequisite gaps from active misconceptions", group: "label" },
+    { field: "theta_prior",        type: "float",    desc: "Proficiency estimate entering this lesson — the posterior from the previous lesson becomes the prior here", group: "estimate" },
+    { field: "theta_posterior",    type: "float",    desc: "Updated proficiency estimate after this response — Bayesian update using 3PL item parameters and Q-matrix structure", group: "estimate" },
+    { field: "timestamp",          type: "datetime", desc: "Response timestamp", group: "context" },
+  ];
+
+  const schemaGroupColor = { context: C.textMuted, label: C.accent, estimate: C.blue };
+
+  // simple SVG pathway graph
+  const svgW = 800, svgH = 500;
+  const getNode = (id) => pathwayNodes.find(n => n.id === id);
+
+  return (
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 20px" }}>
+
+      {/* framing */}
+      <div style={{ marginBottom: 24 }}>
+        <SectionLabel>Researcher View</SectionLabel>
+        <h2 style={{ color: C.text, fontSize: 22, margin: 0, fontWeight: 800 }}>What this architecture generates</h2>
+        <div style={{ color: C.textMuted, fontSize: 13, marginTop: 4 }}>Learning pathway structure · Tagged response sequences · Data schema · Technical deep-dives</div>
+      </div>
+
+      <Card style={{ marginBottom: 20, borderLeft: `4px solid ${C.gold}` }}>
+        <div style={{ fontSize: 10, color: C.gold, fontWeight: 800, letterSpacing: "0.1em", marginBottom: 10 }}>THE ARCHITECTURE</div>
+        <div style={{ color: C.text, fontSize: 14, fontWeight: 700, lineHeight: 1.5, marginBottom: 10 }}>
+          Resolve generates something most adaptive systems cannot produce: a labeled training corpus where latent states are <em style={{ color: C.accent }}>defined before data is collected</em>, not inferred from behavioral proxies after the fact.
+        </div>
+        <div style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.75, marginBottom: 14 }}>
+          Every response to a Resolve exit ticket is a structured observation against a psychometrician-authored cognitive model. The labels are not applied at analysis time — they are embedded in the instrument's design. This means the measurement model and the training corpus are the same thing.
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+          {[
+            { color: C.red, label: "Misconception tags", body: "Each wrong-answer option maps to a specific, research-documented misconception defined in the content specification before the item is written. A response doesn't just register as incorrect — it registers as evidence for a particular hypothesis about student thinking. This is what makes the latent state interpretable rather than inferred." },
+            { color: C.blue, label: "Cognitive step tags", body: "Every item targets a specific step in the standard's cognitive architecture — the sequenced mental operations a student must execute to demonstrate understanding. Tagging responses by cognitive step means the model can locate where in the reasoning chain a student is failing, not just whether they failed. A student who succeeds at Step 2 but fails at Step 4 has a fundamentally different profile from one who fails at Step 1." },
+            { color: C.amber, label: "Difficulty level parameters", body: "Items are parameterized across five difficulty dimensions — number properties, representational demand, contextual load, and cognitive demand type. A student who fails only under high contextual load but succeeds under low load has a different instructional need from one who fails across all conditions. Difficulty parameters make this distinction visible in the training data." },
+            { color: C.purple, label: "Prerequisite tags", body: "Items sensitive to specific prerequisite gaps are tagged accordingly. This is what connects current-standard performance back to prior learning and forward to adjacent standards — enabling the cross-standard pathway inference that behavioral proxy systems cannot produce." },
+          ].map((d, i) => (
+            <div key={i} style={{ background: C.surfaceUp, borderRadius: 8, padding: "10px 14px", borderLeft: `3px solid ${d.color}` }}>
+              <div style={{ color: d.color, fontWeight: 700, fontSize: 12, marginBottom: 4 }}>{d.label}</div>
+              <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.7 }}>{d.body}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.75 }}>
+          Below: the learning pathway graph this generates across standards, the labeled response sequences it produces per student, and the data schema that makes downstream ML tractable. This is the problem that has prevented knowledge tracing models from producing interpretable, defensible state estimates — and it is solved here at the source.
+        </div>
+      </Card>
+
+      {/* learning pathway graph */}
+      <Card style={{ marginBottom: 20 }}>
+        <SectionLabel>Learning Pathway Graph — Cross-Standard</SectionLabel>
+        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 12 }}>Nodes = standards and misconception states. Edges = observed transitions and risk relationships across the student population. Thickness = frequency.</div>
+        <div style={{ overflowX: "auto" }}>
+          <svg width={svgW} height={svgH} style={{ display: "block", minWidth: svgW }}>
+            {/* edges */}
+            {pathwayEdges.map((e, i) => {
+              const from = getNode(e.from);
+              const to = getNode(e.to);
+              if (!from || !to) return null;
+              return (
+                <g key={i}>
+                  <line x1={from.x + 50} y1={from.y + 20} x2={to.x + 50} y2={to.y + 20}
+                    stroke={e.color} strokeWidth={e.width} strokeDasharray={e.label === "blocks" ? "6,3" : e.label === "risk" ? "4,3" : "none"} strokeOpacity={0.6} />
+                  {e.label && (
+                    <text x={(from.x + to.x) / 2 + 50} y={(from.y + to.y) / 2 + 16} fill={e.color} fontSize={9} textAnchor="middle" opacity={0.8}>{e.label}</text>
+                  )}
+                </g>
+              );
+            })}
+            {/* nodes */}
+            {pathwayNodes.map((n, i) => (
+              <g key={i}>
+                <rect x={n.x} y={n.y} width={100} height={40} rx={6}
+                  fill={n.color + "22"} stroke={n.color} strokeWidth={n.type === "standard" ? 2 : 1.5}
+                  strokeDasharray={n.type === "misconception" ? "4,2" : "none"} />
+                {n.label.split("\n").map((line, j) => (
+                  <text key={j} x={n.x + 50} y={n.y + 15 + j * 13} fill={n.color} fontSize={9} fontWeight={n.type === "standard" ? 700 : 400} textAnchor="middle">{line}</text>
+                ))}
+                {n.standard && <text x={n.x + 50} y={n.y + 36} fill={n.color} fontSize={8} textAnchor="middle" opacity={0.6}>{n.standard}</text>}
+              </g>
+            ))}
+            {/* legend */}
+            {[
+              { x: 20, y: 460, color: C.accent, label: "Current standard", dash: "none" },
+              { x: 160, y: 460, color: C.blue, label: "Adjacent standards", dash: "none" },
+              { x: 300, y: 460, color: C.red, label: "Gateway misconception", dash: "4,2" },
+              { x: 460, y: 460, color: C.amber, label: "Medium misconception", dash: "4,2" },
+              { x: 600, y: 460, color: C.textMuted, label: "Prerequisite", dash: "none" },
+            ].map((l, i) => (
+              <g key={i}>
+                <rect x={l.x} y={l.y - 8} width={14} height={14} rx={3} fill={l.color + "22"} stroke={l.color} strokeWidth={1.5} strokeDasharray={l.dash} />
+                <text x={l.x + 18} y={l.y + 4} fill={C.textMuted} fontSize={9}>{l.label}</text>
+              </g>
+            ))}
+          </svg>
+        </div>
+      </Card>
+
+      {/* tagged response sequences */}
+      <Card style={{ marginBottom: 20 }}>
+        <SectionLabel>Tagged Response Sequence — Full Record</SectionLabel>
+        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 14 }}>One student shown in full. Each response record carries all labeling dimensions simultaneously — misconception evidence, cognitive step, difficulty parameters, and prerequisite sensitivity. Labels defined at item design time, not inferred post-hoc.</div>
+        {responseSequences.map((seq, i) => (
+          <div key={i}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
+              <span style={{ color: C.text, fontWeight: 700, fontSize: 13 }}>{seq.student}</span>
+              <Tag small color={C.red}>NOT READY</Tag>
+              <span style={{ color: C.textDim, fontSize: 11 }}>· {seq.note}</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {seq.items.map((item, j) => (
+                <div key={j} style={{ border: `1px solid ${item.correct ? C.accent + "44" : C.red + "33"}`, borderRadius: 8, overflow: "hidden" }}>
+                  {/* item header */}
+                  <div style={{ display: "flex", gap: 10, alignItems: "center", padding: "8px 12px", background: item.correct ? C.accentDim : C.redDim, flexWrap: "wrap" }}>
+                    <Tag small color={C.blue}>{item.label}</Tag>
+                    <span style={{ color: C.text, fontSize: 12, flex: 1, fontStyle: "italic" }}>{item.response}</span>
+                    <span style={{ color: item.correct ? C.accent : C.red, fontWeight: 800, fontSize: 12 }}>{item.correct ? "✓ correct" : "✗ incorrect"}</span>
+                  </div>
+                  {/* full label record */}
+                  <div style={{ padding: "10px 12px", background: C.surface, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                    <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.red}` }}>
+                      <div style={{ fontSize: 9, color: C.red, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>MISCONCEPTION TAGS</div>
+                      {item.misconception_tags.length > 0
+                        ? item.misconception_tags.map((t, k) => <div key={k} style={{ color: C.text, fontSize: 11, marginBottom: 2 }}>→ {t}</div>)
+                        : <div style={{ color: C.textDim, fontSize: 11 }}>none — correct response</div>}
+                    </div>
+                    <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.blue}` }}>
+                      <div style={{ fontSize: 9, color: C.blue, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>COGNITIVE STEP</div>
+                      <div style={{ color: C.text, fontSize: 11 }}>Step {item.cognitive_step.n} — {item.cognitive_step.desc}</div>
+                    </div>
+                    <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.amber}` }}>
+                      <div style={{ fontSize: 9, color: C.amber, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>DIFFICULTY PARAMETERS</div>
+                      <div style={{ color: C.accent, fontSize: 11, fontWeight: 700, marginBottom: 2 }}>{item.difficulty.level}</div>
+                      <div style={{ color: C.textMuted, fontSize: 11 }}>{item.difficulty.params}</div>
+                    </div>
+                    <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.purple}` }}>
+                      <div style={{ fontSize: 9, color: C.purple, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>PREREQUISITE TAGS</div>
+                      {item.prerequisite_tags.length > 0
+                        ? item.prerequisite_tags.map((t, k) => <div key={k} style={{ color: C.text, fontSize: 11, marginBottom: 2 }}>→ {t}</div>)
+                        : <div style={{ color: C.textDim, fontSize: 11 }}>none</div>}
+                    </div>
+                  </div>
+                  {/* theta update */}
+                  <div style={{ padding: "6px 12px", background: C.surfaceUp, borderTop: `1px solid ${C.border}`, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                      <span style={{ fontSize: 9, color: C.textMuted, fontWeight: 700, letterSpacing: "0.07em" }}>θ PRIOR</span>
+                      <span style={{ color: item.theta.prior < 0 ? C.red : C.amber, fontFamily: "monospace", fontSize: 11, fontWeight: 700 }}>{item.theta.prior.toFixed(2)}</span>
+                    </div>
+                    <span style={{ color: C.textDim, fontSize: 11 }}>→</span>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                      <span style={{ fontSize: 9, color: C.textMuted, fontWeight: 700, letterSpacing: "0.07em" }}>θ POSTERIOR</span>
+                      <span style={{ color: item.theta.posterior < 0 ? C.red : C.amber, fontFamily: "monospace", fontSize: 11, fontWeight: 700 }}>{item.theta.posterior.toFixed(2)}</span>
+                    </div>
+                    {item.note && <div style={{ color: C.textMuted, fontSize: 10, fontStyle: "italic", flex: 1 }}>{item.note}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </Card>
+
+      {/* data schema */}
+      <Card style={{ marginBottom: 20 }}>
+        <SectionLabel>Data Schema — Per Response Record</SectionLabel>
+        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 8 }}>What gets generated per student per item per lesson. Every label field defined before data collection begins — not assigned at analysis time.</div>
+        <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
+          {[["label", C.accent, "Labeling dimensions — the diagnostic core"], ["estimate", C.blue, "Psychometric estimates"], ["context", C.textMuted, "Record context"]].map(([g, col, desc]) => (
+            <div key={g} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ width: 10, height: 10, borderRadius: 2, background: col, flexShrink: 0 }} />
+              <span style={{ color: C.textMuted, fontSize: 11 }}>{desc}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+            <thead>
+              <tr style={{ background: C.surfaceUp }}>
+                {["Field","Type","Description"].map(h => (
+                  <th key={h} style={{ padding: "8px 10px", textAlign: "left", color: C.textMuted, border: `1px solid ${C.border}` }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {dataSchema.map((row, i) => (
+                <tr key={i} style={{ background: i % 2 === 0 ? C.surface : C.surfaceUp }}>
+                  <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: schemaGroupColor[row.group], fontFamily: "monospace", fontWeight: 700 }}>{row.field}</td>
+                  <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: C.purple, fontFamily: "monospace" }}>{row.type}</td>
+                  <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: row.group === "label" ? C.text : C.textMuted, lineHeight: 1.5 }}>{row.desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      {/* expandable deep-dives */}
+      {[
+        {
+          key: "psych", open: psychOpen, toggle: () => setPsychOpen(o => !o),
+          title: "Psychometrician Deep-Dive",
+          sub: "Q-matrix · IRT parameters · Belief state updating · Distractor design",
+          color: C.blue,
+          content: (
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <div style={{ fontSize: 11, color: C.blue, fontWeight: 800, marginBottom: 8 }}>QUASI-Q MATRIX — 6.RP.A.1 DIAGNOSTIC INSTRUMENT</div>
+                <div style={{ overflowX: "auto" }}>
+                  <table style={{ borderCollapse: "collapse", fontSize: 11, width: "100%" }}>
+                    <thead>
+                      <tr style={{ background: C.surfaceUp }}>
+                        {["Misunderstanding","Type","CR","D2","D3","D4","D5"].map(h => (
+                          <th key={h} style={{ padding: "7px 10px", color: C.textMuted, textAlign: h === "Misunderstanding" ? "left" : "center", border: `1px solid ${C.border}` }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { name: "Subtracting instead of comparing", type: "Gateway", typeColor: C.red, cr: "✓", d2: "A", d3: "—", d4: "—", d5: "—" },
+                        { name: "Ratio as single number", type: "Foundational", typeColor: C.red, cr: "—", d2: "C", d3: "D", d4: "C", d5: "D" },
+                        { name: "Part-to-part vs part-to-whole", type: "Structural", typeColor: C.amber, cr: "✓", d2: "D", d3: "A", d4: "B", d5: "A" },
+                        { name: "Wrong referent order", type: "Coordination", typeColor: C.purple, cr: "✓", d2: "—", d3: "B", d4: "—", d5: "B" },
+                        { name: "Fraction notation only", type: "Representational", typeColor: C.blue, cr: "—", d2: "—", d3: "—", d4: "D", d5: "C" },
+                        { name: "Prerequisite: ratio as relationship", type: "Prerequisite", typeColor: C.textMuted, cr: "✓", d2: "—", d3: "—", d4: "—", d5: "—" },
+                      ].map((row, i) => (
+                        <tr key={i} style={{ background: i % 2 === 0 ? C.surface : C.surfaceUp }}>
+                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.text }}>{row.name}</td>
+                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, textAlign: "center" }}><Tag small color={row.typeColor}>{row.type}</Tag></td>
+                          {[row.cr, row.d2, row.d3, row.d4, row.d5].map((cell, j) => (
+                            <td key={j} style={{ padding: "7px 10px", border: `1px solid ${C.border}`, textAlign: "center", color: cell !== "—" ? row.typeColor : C.textDim, fontWeight: cell !== "—" ? 700 : 400 }}>{cell}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: C.blue, fontWeight: 800, marginBottom: 8 }}>HYPOTHESIZED 3PL IRT PRIORS — EXPERT-BASED, PRE-CALIBRATION</div>
+                <div style={{ overflowX: "auto" }}>
+                  <table style={{ borderCollapse: "collapse", fontSize: 11, width: "100%" }}>
+                    <thead>
+                      <tr style={{ background: C.surfaceUp }}>
+                        {["Item","b (difficulty)","a (discrimination)","c (pseudo-guessing)","Notes"].map(h => (
+                          <th key={h} style={{ padding: "7px 10px", color: C.textMuted, textAlign: "left", border: `1px solid ${C.border}` }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { item: "D1 (CR — gateway screen)", b: "−0.20", a: "1.65", c: "n/a", note: "Moderate b — gateway screen, not hardest item. High discrimination by design." },
+                        { item: "D2 (baseline)", b: "−0.60", a: "1.30", c: "0.07", note: "Easiest MC item. All strategies converge if understanding intact." },
+                        { item: "D3 (targeted)", b: "+0.30", a: "1.50", c: "0.08", note: "Part-to-whole discrimination. Numbers chosen for distinct wrong answers." },
+                        { item: "D4 (targeted)", b: "+0.50", a: "1.45", c: "0.09", note: "Secondary discrimination. Adjacent misconceptions produce distinct responses." },
+                        { item: "D5 (applied)", b: "+0.80", a: "1.35", c: "0.12", note: "Highest difficulty. Irrelevant information lure present." },
+                      ].map((row, i) => (
+                        <tr key={i} style={{ background: i % 2 === 0 ? C.surface : C.surfaceUp }}>
+                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.text, fontFamily: "monospace" }}>{row.item}</td>
+                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.accent, fontFamily: "monospace", textAlign: "center" }}>{row.b}</td>
+                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.blue, fontFamily: "monospace", textAlign: "center" }}>{row.a}</td>
+                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.purple, fontFamily: "monospace", textAlign: "center" }}>{row.c}</td>
+                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.textMuted, fontSize: 10 }}>{row.note}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div style={{ marginTop: 10, fontSize: 11, color: C.textMuted, lineHeight: 1.6, padding: "8px 12px", background: C.surfaceUp, borderRadius: 6 }}>
+                  <strong style={{ color: C.text }}>Caveats:</strong> These are expert-based priors for Bayesian calibration — not empirical estimates. Discrimination estimates assume distractors work as designed. Minimum pilot sample N ≥ 200 recommended before treating as calibrated parameters. Discrepancies ≥ 0.5 logits (b) or ≥ 0.4 (a) between priors and empirical values warrant item revision.
+                </div>
+              </div>
+              <div style={{ background: C.blueDim, borderRadius: 8, padding: "12px 14px", border: `1px solid ${C.blue}33` }}>
+                <div style={{ fontSize: 11, color: C.blue, fontWeight: 800, marginBottom: 6 }}>BELIEF STATE UPDATING — DINA/DKVMN MODEL</div>
+                <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.7 }}>Each response updates the posterior distribution over the student's misconception state. The prior is initialized from the content specification's hypothesized 3PL parameters. After 5 items, the posterior is sufficiently concentrated to support diagnostic classification. Cross-lesson accumulation narrows the confidence interval — the graph above shows this narrowing as the distribution curves become tighter across lessons 1–4.</div>
+              </div>
+            </div>
+          )
+        },
+        {
+          key: "ml", open: mlOpen, toggle: () => setMlOpen(o => !o),
+          title: "ML Engineer Deep-Dive",
+          sub: "Latent state space · Training corpus · Bayesian updating · Stage 1→2 roadmap",
+          color: C.purple,
+          content: (
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ background: C.purpleDim, borderRadius: 8, padding: "12px 14px", border: `1px solid ${C.purple}33` }}>
+                <div style={{ fontSize: 11, color: C.purple, fontWeight: 800, marginBottom: 6 }}>LATENT STATE SPACE DEFINITION</div>
+                <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.7 }}>The misconception taxonomy defines a structured discrete latent state space. For 6.RP.A.1: 5 misconception states + 1 prerequisite failure state + mastery state = 7 distinct latent states per standard. States are ordered by diagnostic priority and cognitive step — not arbitrary labels. Cross-standard: states are linked via the learning pathway graph, enabling transition probability estimation across the curriculum sequence.</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: C.purple, fontWeight: 800, marginBottom: 8 }}>WHAT MAKES THIS CORPUS DIFFERENT</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {[
+                    ["Standard behavioral proxy corpus", "Right/wrong sequences + time-on-task + clickstreams. Latent states inferred post-hoc via clustering or HMM. Labels are behavioral categories, not cognitive constructs.", C.textMuted],
+                    ["Resolve labeled corpus", "Response sequences tagged against psychometrician-defined misconception taxonomy at item design time. Latent states defined before a single data point is collected. Labels are cognitive constructs with theoretical grounding and IRT priors.", C.purple],
+                  ].map(([title, desc, col], i) => (
+                    <div key={i} style={{ background: C.surfaceUp, borderRadius: 8, padding: "10px 14px", borderLeft: `3px solid ${col}` }}>
+                      <div style={{ color: col, fontWeight: 700, fontSize: 12, marginBottom: 4 }}>{title}</div>
+                      <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.6 }}>{desc}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: C.purple, fontWeight: 800, marginBottom: 8 }}>BAYESIAN UPDATING — LIKELIHOOD FUNCTION</div>
+                <div style={{ background: C.surface, borderRadius: 8, padding: "12px 14px", fontFamily: "monospace", fontSize: 11, color: C.accent, border: `1px solid ${C.border}`, lineHeight: 1.8 }}>
+                  P(state_k | response_sequence) ∝ P(response_sequence | state_k) × P(state_k)<br/>
+                  <span style={{ color: C.textMuted }}>// Prior: 3PL parameters from content spec</span><br/>
+                  <span style={{ color: C.textMuted }}>// Likelihood: Q-matrix × slip/guess parameters per item</span><br/>
+                  <span style={{ color: C.textMuted }}>// Posterior: updated after each response, concentrated after 5 items</span><br/>
+                  <span style={{ color: C.textMuted }}>// Cross-lesson: posterior becomes prior for next lesson</span>
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: C.purple, fontWeight: 800, marginBottom: 8 }}>STAGE ROADMAP</div>
+                {[
+                  { stage: "Stage 1 — Now", title: "Knowledge tracing with interpretable states", desc: "Labeled response sequences train KT models where latent constructs are psychometrician-defined. Models trace which specific misconception is active at which cognitive step — not a mastery probability. DKVMN architecture well-suited: key memory stores misconception state vectors, value memory stores evidence from labeled responses.", color: C.accent },
+                  { stage: "Stage 2 — Medium term", title: "Within-instruction proficiency measurement", desc: "Cognitive step sequences define a generative model for student behavior during instruction. In-lesson responses (not just exit ticket) become evidence for updating belief state in real time — predicting which misconception a student holds before the exit ticket is scored. Enables adaptive in-lesson branching.", color: C.blue },
+                  { stage: "Stage 3 — Scale", title: "Cross-standard learning pathway optimization", desc: "Accumulated transition probabilities across the learning pathway graph enable personalized sequencing recommendations. Which students need prerequisite remediation before the next standard? Which are ready for enrichment? The pathway graph structure makes this tractable without requiring black-box embeddings.", color: C.purple },
+                ].map((s, i) => (
+                  <div key={i} style={{ background: C.surfaceUp, borderRadius: 8, padding: "12px 14px", borderLeft: `3px solid ${s.color}`, marginBottom: 8 }}>
+                    <div style={{ fontSize: 10, color: s.color, fontWeight: 800, marginBottom: 4 }}>{s.stage}</div>
+                    <div style={{ color: C.text, fontWeight: 700, fontSize: 13, marginBottom: 6 }}>{s.title}</div>
+                    <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.65 }}>{s.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        }
+      ].map(section => (
+        <Card key={section.key} style={{ marginBottom: 16, border: `1px solid ${section.color}33` }}>
+          <div onClick={section.toggle} style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <div style={{ color: section.color, fontWeight: 800, fontSize: 13 }}>{section.title}</div>
+              <div style={{ color: C.textMuted, fontSize: 11, marginTop: 2 }}>{section.sub}</div>
+            </div>
+            <div style={{ color: section.color, fontSize: 18, transition: "transform 0.2s", transform: section.open ? "rotate(180deg)" : "none" }}>⌄</div>
+          </div>
+          {section.open && <div style={{ marginTop: 16 }}>{section.content}</div>}
+        </Card>
+      ))}
+
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════
+// SCREEN 8 — TARGETED SUPPORT
+// ══════════════════════════════════════════════════════════════
+function TargetedSupportScreen({ onNext }) {
+  const modules = [
+    {
+      letter: "A", color: C.red,
+      title: "Subtracting instead of comparing",
+      subtitle: "Core misunderstanding — address first",
+      severity: "HIGH",
+      severityNote: "This is the foundational misunderstanding that reframes all subsequent ratio work. A student with this pattern doesn't yet have a ratio concept — they have a subtraction concept. Nothing else can be reliably addressed until this is resolved.",
+      bundled: false,
+      approach: "Side-by-side comparison of two ways of describing the same situation, one additive and one multiplicative, so students can see where the additive model fails → Classification practice across familiar and novel contexts → Student predicts using the correct model and self-checks",
+      checkNote: "2-item check at the end. The target misunderstanding must produce a detectably different wrong answer on both items. Three outcomes: Resolved, Partially resolved, Still present.",
+      versions: ["Teacher Version — includes overview, facilitation notes, answer key, and check key", "Student Version — clean activities and check only"],
+      designNote: "This module stands alone. Combining it with others dilutes the focused attention the misunderstanding requires.",
+    },
+    {
+      letter: "B", color: C.red,
+      title: "Treating a ratio as a single number",
+      subtitle: "Student loses the two-quantity structure",
+      severity: "HIGH",
+      severityNote: "Without the two-quantity frame, ratio procedures are meaningless. A student who collapses 3:5 to 8 cannot meaningfully learn equivalent ratios, unit rates, or proportional reasoning — the internal structure they depend on has been erased.",
+      bundled: false,
+      approach: "Build the two-quantity structure concretely before any symbolic work → Practice identifying both quantities and writing the structured form → Sort correct and collapsed representations and explain what's lost in each case",
+      checkNote: "2-item check. The collapsed answer must be numerically different from both the correct answer and any other wrong-answer type — otherwise the error is invisible.",
+      versions: ["Teacher Version", "Student Version"],
+      designNote: "Separate from Module A — different point of breakdown, different instructional approach. Students can have both misunderstandings simultaneously; address Module A first if so.",
+    },
+    {
+      letter: "C", color: C.amber,
+      title: "Confusing part-to-part and part-to-whole",
+      subtitle: "Also addresses fraction-notation narrowness",
+      severity: "MEDIUM",
+      severityNote: "The foundational concept is present — student understands ratio as a relationship, not a difference. The confusion is between two valid but distinct ratio structures. This is teachable with targeted discrimination practice and won't require rebuilding from scratch.",
+      bundled: true,
+      approach: "One context generating both structures side-by-side with a decision rule → Alternating classify-and-produce practice across the same context → Novel context where student produces both structures and explains the difference",
+      checkNote: "2-item check. Both the part-to-whole confusion and the fraction-only representation error are detectable. The gateway misunderstanding (subtracting instead of comparing) is also checked as a secondary screen.",
+      versions: ["Teacher Version", "Student Version"],
+      designNote: "Fraction-notation narrowness is bundled here because it typically appears as part of the same structural confusion — students who can only write ratios as fractions often also struggle to move between part-to-part and part-to-whole.",
+    },
+    {
+      letter: "D", color: C.purple,
+      title: "Writing the ratio in the wrong order",
+      subtitle: "Reasoning intact — coordination issue only",
+      severity: "LOW–MEDIUM",
+      severityNote: "Mathematical understanding is solid. The student grasps what a ratio is and how it works — they're just not reliably tracking which quantity goes first. This is often resolved quickly with deliberate practice and a systematic procedure.",
+      bundled: false,
+      approach: "Establish that order matters with two contrasting examples where reversal produces a meaningfully different answer → Deliberate practice with presentations where the quantities are in unexpected order → Bidirectional translation with one error-spotting item",
+      checkNote: "2-item check. The reversed answer must be numerically different from the correct answer — values chosen specifically to avoid symmetry that would mask the error.",
+      versions: ["Teacher Version", "Student Version"],
+      designNote: "Item values are chosen so that writing the quantities in the wrong order gives a detectably different answer. Symmetric or palindromic values are explicitly avoided.",
+    },
+  ];
+
   const [expanded, setExpanded] = useState(null);
 
   return (
     <div style={{ maxWidth: 820, margin: "0 auto", padding: "32px 20px" }}>
       <div style={{ marginBottom: 24 }}>
-        <SectionLabel>Phase 6 Output · Remediation Modules</SectionLabel>
-        <h2 style={{ color: C.text, fontSize: 22, margin: 0, fontWeight: 800 }}>4 Modules Generated · 8 Documents</h2>
+        <SectionLabel>Targeted Support</SectionLabel>
+        <h2 style={{ color: C.text, fontSize: 22, margin: 0, fontWeight: 800 }}>4 Support Modules · 8 Documents</h2>
         <div style={{ color: C.textMuted, fontSize: 13, marginTop: 4 }}>
-          Each misconception classified into one of 5 types (G / F / S / R / C). Modules ordered by severity. Each produces a Teacher Version and Student Version. 20 min each.
+          One module per identified misunderstanding, ordered by severity. Each is 20 minutes, works self-directed or with a teacher, and ends with a 2-item check that tells you whether the misunderstanding has resolved.
         </div>
       </div>
 
-      {/* type legend */}
+      {/* approach legend */}
       <Card style={{ marginBottom: 20 }}>
-        <SectionLabel>Misconception-Type Taxonomy</SectionLabel>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
+        <SectionLabel>How the modules are designed</SectionLabel>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
           {[
-            { t: "G", name: "Gateway", desc: "Fundamentally different concept model", color: C.red },
-            { t: "F", name: "Foundational Collapse", desc: "Multi-component object treated as single value", color: C.red },
-            { t: "S", name: "Structural Confusion", desc: "Correct concept; conflates two sub-types", color: C.amber },
-            { t: "R", name: "Representational Narrowness", desc: "Correct understanding; one notation only", color: C.blue },
-            { t: "C", name: "Coordination Error", desc: "Correct reasoning; auxiliary mapping wrong", color: C.purple },
-          ].map(item => (
-            <div key={item.t} style={{ background: item.color + "15", border: `1px solid ${item.color}44`, borderRadius: 8, padding: "10px 10px", textAlign: "center" }}>
-              <div style={{ fontSize: 20, fontWeight: 900, color: item.color, marginBottom: 4 }}>{item.t}</div>
-              <div style={{ color: C.text, fontSize: 11, fontWeight: 700, marginBottom: 4 }}>{item.name}</div>
-              <div style={{ color: C.textMuted, fontSize: 10, lineHeight: 1.4 }}>{item.desc}</div>
+            { label: "Each module targets one misunderstanding", desc: "Matched to the specific type of error — not a generic reteach of the lesson.", color: C.accent },
+            { label: "Ordered by severity", desc: "Address high-severity misunderstandings first. Module A before Module C.", color: C.red },
+            { label: "Works without teacher prep", desc: "Worked examples, self-checks, and facilitation notes built in. Teacher guidance is optional.", color: C.blue },
+            { label: "Ends with a diagnostic check", desc: "Two items with three possible outcomes: Resolved, Partially resolved, Still present.", color: C.purple },
+          ].map((item, i) => (
+            <div key={i} style={{ background: item.color + "12", border: `1px solid ${item.color}33`, borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ color: item.color, fontWeight: 700, fontSize: 12, marginBottom: 4 }}>{item.label}</div>
+              <div style={{ color: C.textMuted, fontSize: 11, lineHeight: 1.5 }}>{item.desc}</div>
             </div>
           ))}
         </div>
@@ -1035,15 +1432,18 @@ function RemediationScreen({ onNext }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
         {modules.map((mod) => (
           <div key={mod.letter} style={{ border: `1px solid ${mod.color}44`, borderRadius: 12, overflow: "hidden" }}>
-            <div onClick={() => setExpanded(expanded === mod.letter ? null : mod.letter)} style={{ cursor: "pointer", padding: "16px 18px", background: mod.color + "0F", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div onClick={() => setExpanded(expanded === mod.letter ? null : mod.letter)}
+              style={{ cursor: "pointer", padding: "16px 18px", background: mod.color + "0F", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
                 <div style={{ width: 40, height: 40, borderRadius: 8, background: mod.color + "33", border: `1px solid ${mod.color}66`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 18, color: mod.color, flexShrink: 0 }}>{mod.letter}</div>
                 <div>
-                  <div style={{ color: C.text, fontWeight: 700, fontSize: 14 }}>{mod.misconception}</div>
+                  <div style={{ color: C.text, fontWeight: 700, fontSize: 14 }}>{mod.title}</div>
                   <div style={{ display: "flex", gap: 6, marginTop: 4, flexWrap: "wrap" }}>
-                    <Tag small color={mod.color}>{mod.type} — {mod.typeName}</Tag>
-                    <Tag small color={mod.severity === "HIGH" ? C.red : mod.severity === "MEDIUM" ? C.amber : C.blue}>Severity: {mod.severity}</Tag>
-                    {mod.bundled && <Tag small color={C.purple}>BUNDLED MODULE</Tag>}
+                    <Tag small color={mod.color}>{mod.subtitle}</Tag>
+                    <Tag small color={mod.severity === "HIGH" ? C.red : mod.severity === "MEDIUM" ? C.amber : C.purple}>
+                      {mod.severity === "HIGH" ? "Address first" : mod.severity === "MEDIUM" ? "Address after high-severity" : "Address when others resolved"}
+                    </Tag>
+                    {mod.bundled && <Tag small color={C.purple}>Combined module</Tag>}
                   </div>
                 </div>
               </div>
@@ -1054,9 +1454,9 @@ function RemediationScreen({ onNext }) {
             </div>
             {expanded === mod.letter && (
               <div style={{ padding: "14px 18px", background: C.surface, borderTop: `1px solid ${mod.color}33`, display: "flex", flexDirection: "column", gap: 10 }}>
-                <div style={{ background: C.surfaceUp, borderRadius: 8, padding: "10px 14px" }}>
-                  <div style={{ fontSize: 11, color: mod.color, fontWeight: 700, marginBottom: 4 }}>SEVERITY RATIONALE</div>
-                  <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.6 }}>{mod.severityRationale}</div>
+                <div style={{ background: C.surfaceUp, borderRadius: 8, padding: "10px 14px", borderLeft: `3px solid ${mod.color}` }}>
+                  <div style={{ fontSize: 11, color: mod.color, fontWeight: 700, marginBottom: 4 }}>WHY THIS SEVERITY</div>
+                  <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.6 }}>{mod.severityNote}</div>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                   <div style={{ background: C.surfaceUp, borderRadius: 8, padding: "10px 14px" }}>
@@ -1065,12 +1465,12 @@ function RemediationScreen({ onNext }) {
                     <div style={{ color: C.textMuted, fontSize: 11, marginTop: 6 }}>3 activities · 20 min · Self-directed or teacher-facilitated</div>
                   </div>
                   <div style={{ background: C.surfaceUp, borderRadius: 8, padding: "10px 14px" }}>
-                    <div style={{ fontSize: 11, color: C.textMuted, fontWeight: 700, marginBottom: 4 }}>MINI DIAGNOSTIC ET</div>
-                    <div style={{ color: C.text, fontSize: 12, lineHeight: 1.6 }}>{mod.miniET}</div>
+                    <div style={{ fontSize: 11, color: C.textMuted, fontWeight: 700, marginBottom: 4 }}>END-OF-MODULE CHECK</div>
+                    <div style={{ color: C.text, fontSize: 12, lineHeight: 1.6 }}>{mod.checkNote}</div>
                   </div>
                 </div>
                 <div style={{ fontSize: 11, color: C.amber, lineHeight: 1.6, padding: "8px 12px", background: C.amberDim, borderRadius: 6, border: `1px solid ${C.amber}33` }}>
-                  <strong>Design constraint:</strong> {mod.constraint}
+                  <strong>Design note:</strong> {mod.designNote}
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {mod.versions.map((v, i) => (
@@ -1084,430 +1484,43 @@ function RemediationScreen({ onNext }) {
           </div>
         ))}
       </div>
-
-      <Btn onClick={onNext} style={{ width: "100%", padding: 14, fontSize: 14 }}>
-        VIEW TEACHER REPORT + STUDENT DASHBOARD →
+      <Btn onClick={onNext} style={{ width: "100%", padding: 14, fontSize: 14, marginTop: 24 }}>
+        VIEW RESEARCHER DASHBOARD →
       </Btn>
     </div>
   );
 }
 
 // ══════════════════════════════════════════════════════════════
-// SCREEN 7 — TEACHER REPORT + STUDENT DASHBOARD
+// SCREEN 6 — REPORT & DASHBOARD
 // ══════════════════════════════════════════════════════════════
-function FinalScreen() {
+function FinalScreen({ onNext }) {
   const [tab, setTab] = useState("class");
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [mlExpanded, setMlExpanded] = useState({});
+  const [profViz, setProfViz] = useState("continuum"); // "continuum" or "distribution"
 
   const students = [
-    { name: "Amara J.",  scores: [1,1,1], m1:false, m2:false, m3:true,  m4:false, status:"support",   module:"C" },
-    { name: "Diego R.",  scores: [0,0,1], m1:true,  m2:false, m3:false, m4:false, status:"not-ready", module:"A" },
-    { name: "Priya S.",  scores: [1,1,0], m1:false, m2:false, m3:true,  m4:false, status:"support",   module:"C" },
-    { name: "Marcus T.", scores: [0,0,0], m1:false, m2:true,  m3:false, m4:false, status:"not-ready", module:"B" },
-    { name: "Layla W.",  scores: [1,1,1], m1:false, m2:false, m3:false, m4:false, status:"ready",     module:null },
-    { name: "Finn O.",   scores: [1,0,1], m1:true,  m2:false, m3:false, m4:false, status:"support",   module:"A" },
-    { name: "Nadia K.",  scores: [0,1,1], m1:false, m2:false, m3:false, m4:true,  status:"support",   module:"D" },
-    { name: "Elijah B.", scores: [1,1,0], m1:false, m2:true,  m3:false, m4:false, status:"support",   module:"B" },
+    { name: "Amara J.",  status: "support",   module: "C",
+      descriptor: "Solid on ratio language and notation — writes ratios correctly and understands the multiplicative relationship. Consistently confuses part-to-part and part-to-whole when asked to switch between them. Support Module C recommended before Lesson 5." },
+    { name: "Diego R.",  status: "not-ready", module: "A",
+      descriptor: "Subtracting instead of comparing across most ratio situations — treats ratio problems as 'how many more' questions. This is the core misunderstanding that needs to be resolved before moving forward. Support Module A first. Do not advance to Lesson 5 without resolution." },
+    { name: "Priya S.",  status: "support",   module: "C",
+      descriptor: "Strong ratio language in familiar contexts. Part-to-whole identification breaks down when context shifts — errors are consistent, not random. Support Module C recommended." },
+    { name: "Marcus T.", status: "not-ready", module: "B",
+      descriptor: "Collapsing ratios to a single number — treating 3:5 as just 8. Loses the two-quantity structure the ratio expresses. Support Module B addresses this directly. Monitor for additive comparison alongside." },
+    { name: "Layla W.",  status: "ready",     module: null,
+      descriptor: "Ready. Strong across all five items including the applied interpretation task. Correctly handles both part-to-part and part-to-whole contexts. Well-positioned for Lesson 5." },
+    { name: "Finn O.",   status: "support",   module: "A",
+      descriptor: "Shows additive reasoning in some but not all contexts — likely early-stage rather than fully entrenched. Support Module A recommended; monitor closely in Lesson 5 activities." },
+    { name: "Nadia K.",  status: "support",   module: "D",
+      descriptor: "Understands ratio as a relationship but consistently writes the quantities in the wrong order. Mathematical reasoning is intact — this is a coordination issue, not a conceptual one. Support Module D is short and targeted." },
+    { name: "Elijah B.", status: "support",   module: "B",
+      descriptor: "Treating ratios as totals in applied contexts while performing correctly on straightforward items. The two-quantity structure is unstable. Support Module B recommended." },
   ];
+
   const statusColor = { ready: C.accent, support: C.amber, "not-ready": C.red };
-  const statusLabel = { ready: "READY", support: "MONITOR", "not-ready": "INTERVENE" };
+  const statusLabel = { ready: "READY", support: "READY WITH SUPPORT", "not-ready": "NOT READY" };
+
   const counts = {
-    ready: students.filter(s => s.status === "ready").length,
-    support: students.filter(s => s.status === "support").length,
-    "not-ready": students.filter(s => s.status === "not-ready").length,
-  };
-  const miscCounts = {
-    "M1 Additive Comparison": students.filter(s => s.m1).length,
-    "M2 Foundational Collapse": students.filter(s => s.m2).length,
-    "M3 Part-Whole Confusion": students.filter(s => s.m3).length,
-    "M4 Order Reversal": students.filter(s => s.m4).length,
-  };
-  const miscColors = {
-    "M1 Additive Comparison": C.red,
-    "M2 Foundational Collapse": C.red,
-    "M3 Part-Whole Confusion": C.amber,
-    "M4 Order Reversal": C.purple,
-  };
-
-  // ── knowledge trace data for individual student profiles ──
-  const knowledgeTrace = {
-    "Amara J.": {
-      status: "support", module: "C",
-      plain: {
-        strengths: ["Writes ratio relationships correctly in most contexts","Understands ratio as a multiplicative relationship, not a difference","Fluent with colon notation and ratio language"],
-        support: ["Confuses part-to-part and part-to-whole ratios — sees 12:20 as 12:8","Consistent error on items requiring part-to-whole identification"],
-      },
-      standards: [
-        { code: "4.OA.A", label: "Multiplicative comparison", level: "prereq", theta: 0.9, conf: "high", note: "Strong foundation — multiplicative reasoning intact" },
-        { code: "5.NF.B", label: "Fractions as division", level: "prereq", theta: 0.7, conf: "medium", note: "Adequate; ratio-as-fraction confusion minor" },
-        { code: "6.RP.A.1", label: "Ratio concepts (current)", level: "current", theta: 0.4, conf: "high", note: "Ratio language and notation solid; part-whole distinction failing" },
-        { code: "6.RP.A.2", label: "Unit rate", level: "next", theta: null, conf: "projected", note: "Projected at risk: part-whole confusion likely to surface in unit rate contexts" },
-        { code: "6.RP.A.3", label: "Equivalent ratios / rate", level: "next", theta: null, conf: "projected", note: "Projected moderate risk depending on M3 resolution" },
-      ],
-      activeM: { code: "M3", name: "Part-Whole Confusion", type: "S", severity: "Medium" },
-      mlDetail: {
-        modelType: "Knowledge tracing (DKVMN — labeled response sequences)",
-        latentState: "6RPA1 — θ̂ = +0.38 (SE = 0.24)",
-        activeMisc: "6RPA1.MC3 active (P̂ = 0.71, 95% CI [0.52, 0.85])",
-        priorEvidence: "3 items (D2 ✓, D3 ✗, ET CR partial) — convergent evidence for M3",
-        projections: "6RPA2: P(at-risk) = 0.62 given unresolved M3 · 6RPA3: P(at-risk) = 0.44",
-        dataNote: "Labeled against psychometrician-defined M-code pool. Latent states defined before data collection — not inferred post-hoc from behavioral proxies.",
-      },
-    },
-    "Diego R.": {
-      status: "not-ready", module: "A",
-      plain: {
-        strengths: ["Can identify individual quantities in a situation","Understands basic counting and comparison"],
-        support: ["Treats ratio relationships as subtraction — 'there are 2 more oats than flour'","Gateway misconception active: all ratio reasoning filtered through additive frame","Will not benefit from ratio notation instruction until this is resolved"],
-      },
-      standards: [
-        { code: "4.OA.A", label: "Multiplicative comparison", level: "prereq", theta: 0.1, conf: "medium", note: "Weak — additive reasoning dominant even in multiplicative contexts" },
-        { code: "5.NF.B", label: "Fractions as division", level: "prereq", theta: 0.3, conf: "medium", note: "Partial; procedural only" },
-        { code: "6.RP.A.1", label: "Ratio concepts (current)", level: "current", theta: -0.8, conf: "high", note: "Gateway misconception (M1) active — below readiness threshold" },
-        { code: "6.RP.A.2", label: "Unit rate", level: "next", theta: null, conf: "projected", note: "High risk: M1 will systematically corrupt unit rate reasoning" },
-        { code: "6.RP.A.3", label: "Equivalent ratios / rate", level: "next", theta: null, conf: "projected", note: "High risk: cannot be meaningfully assessed until M1 resolved" },
-      ],
-      activeM: { code: "M1", name: "Additive Comparison", type: "G", severity: "High — Gateway" },
-      mlDetail: {
-        modelType: "Knowledge tracing (DKVMN — labeled response sequences)",
-        latentState: "6RPA1 — θ̂ = −0.81 (SE = 0.31)",
-        activeMisc: "6RPA1.MC1 active (P̂ = 0.88, 95% CI [0.72, 0.96])",
-        priorEvidence: "4 items (D1 ✗, D2 ✗, CR additive, D3 ✗) — high-confidence convergent evidence for M1 gateway",
-        projections: "6RPA2: P(at-risk) = 0.91 · 6RPA3: P(at-risk) = 0.89 — do not advance until M1 resolved",
-        dataNote: "Gateway misconception flagged as blocking. Downstream standard projections unreliable until M1 cleared — reported as high-risk rather than specific theta estimates.",
-      },
-    },
-  };
-
-  const toggleMl = (key) => setMlExpanded(prev => ({ ...prev, [key]: !prev[key] }));
-
-  const StudentProfile = ({ student }) => {
-    const trace = knowledgeTrace[student.name];
-    if (!trace) return (
-      <div style={{ padding: "24px 0", textAlign: "center", color: C.textMuted, fontSize: 13 }}>
-        Full knowledge trace available for Amara J. and Diego R. in this demo.
-      </div>
-    );
-    const levelColor = { prereq: C.textMuted, current: C.accent, next: C.blue };
-    const levelLabel = { prereq: "PREREQUISITE", current: "CURRENT", next: "PROJECTED NEXT" };
-
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        {/* header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
-          <div>
-            <div style={{ color: C.text, fontWeight: 800, fontSize: 18 }}>{student.name}</div>
-            <div style={{ color: C.textMuted, fontSize: 13, marginTop: 2 }}>6.RP.A.1 · Lesson 4 · Period 2</div>
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <div style={{ background: statusColor[trace.status] + "22", border: `1px solid ${statusColor[trace.status]}44`, borderRadius: 8, padding: "8px 14px", textAlign: "center" }}>
-              <div style={{ fontSize: 10, color: statusColor[trace.status], fontWeight: 800, letterSpacing: "0.07em" }}>{statusLabel[trace.status]}</div>
-            </div>
-            {trace.module && (
-              <div style={{ background: C.amberDim, border: `1px solid ${C.amber}44`, borderRadius: 8, padding: "8px 14px", textAlign: "center" }}>
-                <div style={{ fontSize: 10, color: C.amber, fontWeight: 800 }}>MODULE {trace.module}</div>
-                <div style={{ fontSize: 9, color: C.textMuted, marginTop: 1 }}>ASSIGNED</div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* plain language summary */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          <div style={{ background: C.accentDim, border: `1px solid ${C.accent}33`, borderRadius: 8, padding: "12px 14px" }}>
-            <div style={{ fontSize: 10, color: C.accent, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 8 }}>AREAS OF STRENGTH</div>
-            {trace.plain.strengths.map((s, i) => (
-              <div key={i} style={{ display: "flex", gap: 7, marginBottom: 6, alignItems: "flex-start" }}>
-                <span style={{ color: C.accent, fontSize: 11, flexShrink: 0, marginTop: 1 }}>✓</span>
-                <span style={{ color: C.text, fontSize: 12, lineHeight: 1.5 }}>{s}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ background: C.redDim, border: `1px solid ${C.red}33`, borderRadius: 8, padding: "12px 14px" }}>
-            <div style={{ fontSize: 10, color: C.red, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 8 }}>AREAS FOR SUPPORT</div>
-            {trace.plain.support.map((s, i) => (
-              <div key={i} style={{ display: "flex", gap: 7, marginBottom: 6, alignItems: "flex-start" }}>
-                <span style={{ color: C.red, fontSize: 11, flexShrink: 0, marginTop: 1 }}>→</span>
-                <span style={{ color: C.text, fontSize: 12, lineHeight: 1.5 }}>{s}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* active misconception */}
-        <div style={{ background: C.surfaceUp, border: `1px solid ${trace.activeM.severity.includes("Gateway") ? C.red + "66" : C.amber + "55"}`, borderRadius: 8, padding: "12px 14px", display: "flex", gap: 12, alignItems: "flex-start" }}>
-          <div>
-            <div style={{ fontSize: 10, color: C.textMuted, fontWeight: 700, marginBottom: 4 }}>ACTIVE MISUNDERSTANDING</div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <Tag small color={trace.activeM.severity.includes("Gateway") ? C.red : C.amber}>{trace.activeM.code} — {trace.activeM.name}</Tag>
-              <Tag small color={trace.activeM.severity.includes("High") ? C.red : C.amber}>Type {trace.activeM.type} · {trace.activeM.severity}</Tag>
-            </div>
-          </div>
-        </div>
-
-        {/* knowledge trace — full standards */}
-        <Card>
-          <SectionLabel>Knowledge Trace — Standards Progression</SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {trace.standards.map((std, i) => {
-              const col = levelColor[std.level];
-              const thetaDisplay = std.theta !== null ? std.theta.toFixed(2) : "—";
-              const barWidth = std.theta !== null ? Math.round(((std.theta + 2) / 4) * 100) : 0;
-              return (
-                <div key={i} style={{ background: std.level === "current" ? C.accentDim : C.surfaceUp, border: `1px solid ${std.level === "current" ? C.accent + "44" : C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: std.theta !== null ? 8 : 4 }}>
-                    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                      <Tag small color={col}>{levelLabel[std.level]}</Tag>
-                      <span style={{ color: C.text, fontWeight: 700, fontSize: 12 }}>{std.code}</span>
-                      <span style={{ color: C.textMuted, fontSize: 12 }}>{std.label}</span>
-                    </div>
-                    <div style={{ display: "flex", gap: 6, alignItems: "center", flexShrink: 0 }}>
-                      {std.theta !== null ? (
-                        <span style={{ color: std.theta > 0.5 ? C.accent : std.theta > 0 ? C.amber : C.red, fontWeight: 800, fontSize: 13, fontFamily: "monospace" }}>θ = {thetaDisplay}</span>
-                      ) : (
-                        <Tag small color={C.blue}>PROJECTED</Tag>
-                      )}
-                      <Tag small color={std.conf === "high" ? C.accent : std.conf === "medium" ? C.amber : C.blue}>{std.conf}</Tag>
-                    </div>
-                  </div>
-                  {std.theta !== null && (
-                    <div style={{ marginBottom: 6 }}>
-                      <div style={{ background: C.border, borderRadius: 3, height: 5, overflow: "hidden" }}>
-                        <div style={{ width: `${barWidth}%`, height: "100%", background: std.theta > 0.5 ? C.accent : std.theta > 0 ? C.amber : C.red, borderRadius: 3 }} />
-                      </div>
-                    </div>
-                  )}
-                  <div style={{ color: C.textMuted, fontSize: 11, lineHeight: 1.5 }}>{std.note}</div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-
-        {/* ML detail — expandable */}
-        <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: "hidden" }}>
-          <div onClick={() => toggleMl(student.name)} style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: C.surfaceUp }}>
-            <div>
-              <div style={{ color: C.text, fontWeight: 700, fontSize: 13 }}>ML Detail</div>
-              <div style={{ color: C.textMuted, fontSize: 11, marginTop: 1 }}>Latent state estimates · Model type · Data architecture note</div>
-            </div>
-            <span style={{ color: C.accent, fontSize: 14 }}>{mlExpanded[student.name] ? "▲" : "▼"}</span>
-          </div>
-          {mlExpanded[student.name] && (
-            <div style={{ padding: "14px 16px", background: C.surface, borderTop: `1px solid ${C.border}`, display: "flex", flexDirection: "column", gap: 10 }}>
-              {[
-                ["Model", trace.mlDetail.modelType],
-                ["Current latent state", trace.mlDetail.latentState],
-                ["Active misconception estimate", trace.mlDetail.activeMisc],
-                ["Evidence basis", trace.mlDetail.priorEvidence],
-                ["Downstream projections", trace.mlDetail.projections],
-              ].map(([label, val]) => (
-                <div key={label} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                  <span style={{ color: C.textMuted, fontSize: 11, minWidth: 170, flexShrink: 0, fontFamily: "monospace" }}>{label}</span>
-                  <span style={{ color: C.text, fontSize: 12, lineHeight: 1.5 }}>{val}</span>
-                </div>
-              ))}
-              <div style={{ marginTop: 4, padding: "10px 12px", background: C.accentDim, borderRadius: 7, border: `1px solid ${C.accent}33` }}>
-                <div style={{ fontSize: 10, color: C.accent, fontWeight: 800, marginBottom: 4 }}>DATA ARCHITECTURE NOTE</div>
-                <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.6 }}>{trace.mlDetail.dataNote}</div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 20px" }}>
-      <div style={{ marginBottom: 20 }}>
-        <SectionLabel>Post-ET Data · Phase 5b</SectionLabel>
-        <h2 style={{ color: C.text, fontSize: 22, margin: 0, fontWeight: 800 }}>6.RP.A.1 · Lesson 4 · Dashboards</h2>
-        <div style={{ color: C.textMuted, fontSize: 13, marginTop: 4 }}>Class Dashboard · Individual Student Dashboard</div>
-      </div>
-
-      <div style={{ display: "flex", gap: 0, marginBottom: 0, borderBottom: `1px solid ${C.border}` }}>
-        {[["class","Class Dashboard"],["student","Student Dashboard"]].map(([id,label]) => (
-          <button key={id} onClick={() => setTab(id)} style={{ padding: "10px 20px", background: "none", border: "none", borderBottom: tab===id ? `2px solid ${C.accent}` : "2px solid transparent", color: tab===id ? C.accent : C.textMuted, fontWeight: tab===id ? 700 : 500, fontSize: 13, cursor: "pointer", marginBottom: -1 }}>{label}</button>
-        ))}
-      </div>
-
-      {tab === "class" && (
-        <div style={{ paddingTop: 20 }}>
-          {/* summary strip */}
-          <div style={{ display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
-            {Object.entries(counts).map(([k, v]) => (
-              <div key={k} style={{ flex: 1, minWidth: 120, textAlign: "center", background: statusColor[k] + "18", border: `1px solid ${statusColor[k]}44`, borderRadius: 10, padding: "12px 16px" }}>
-                <div style={{ fontSize: 30, fontWeight: 900, color: statusColor[k] }}>{v}</div>
-                <div style={{ fontSize: 10, color: statusColor[k], fontWeight: 800, letterSpacing: "0.08em" }}>{statusLabel[k]}</div>
-              </div>
-            ))}
-            <div style={{ flex: 2, minWidth: 180, background: C.surfaceUp, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 16px" }}>
-              <div style={{ fontSize: 11, color: C.textMuted, fontWeight: 700, marginBottom: 4 }}>Period 2 · 8 students · 6.RP.A.1 · Lesson 4</div>
-              <div style={{ fontSize: 12, color: C.textMuted }}>Exit ticket 10/14. Data feeds misconception support inputs for Lesson 5 gate (future state: automated pipeline).</div>
-            </div>
-          </div>
-
-          {/* misconception bars */}
-          <Card style={{ marginBottom: 16 }}>
-            <SectionLabel>Misconception Prevalence</SectionLabel>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {Object.entries(miscCounts).map(([name, count]) => {
-                const pct = Math.round((count / students.length) * 100);
-                const col = miscColors[name];
-                const code = name.split(" ")[0];
-                return (
-                  <div key={name} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <Tag small color={col}>{code}</Tag>
-                    <div style={{ flex: 1, background: C.surfaceUp, borderRadius: 4, height: 20, overflow: "hidden" }}>
-                      <div style={{ width: `${Math.max(pct, 0)}%`, height: "100%", background: col, borderRadius: 4, display: "flex", alignItems: "center", paddingLeft: 8, minWidth: pct > 0 ? 4 : 0 }}>
-                        {pct > 20 && <span style={{ color: "#0D1117", fontSize: 10, fontWeight: 700 }}>{count}/{students.length}</span>}
-                      </div>
-                    </div>
-                    <div style={{ color: C.textMuted, fontSize: 12, minWidth: 160 }}>{name.split(" ").slice(1).join(" ")}</div>
-                    <div style={{ color: col, fontWeight: 800, fontSize: 13, minWidth: 36 }}>{pct}%</div>
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
-
-          {/* student table */}
-          <Card style={{ marginBottom: 16 }}>
-            <SectionLabel>Individual Knowledge Traces</SectionLabel>
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
-                <thead>
-                  <tr style={{ background: C.surfaceUp }}>
-                    {["Student","CR","D2","D3","M1","M2","M3","M4","Status","Module"].map(h => (
-                      <th key={h} style={{ padding: "8px 10px", color: C.textMuted, textAlign: h === "Student" ? "left" : "center", border: `1px solid ${C.border}`, whiteSpace: "nowrap" }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {students.map((s, i) => (
-                    <tr key={i} onClick={() => { setSelectedStudent(s); setTab("student"); }} style={{ background: i % 2 === 0 ? C.surface : C.surfaceUp, cursor: "pointer" }}>
-                      <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: C.accent, fontWeight: 600, textDecoration: "underline" }}>{s.name}</td>
-                      {s.scores.map((sc, j) => (
-                        <td key={j} style={{ padding: "8px 10px", border: `1px solid ${C.border}`, textAlign: "center" }}>
-                          <span style={{ color: sc ? C.accent : C.red, fontWeight: 700 }}>{sc ? "✓" : "✗"}</span>
-                        </td>
-                      ))}
-                      {[s.m1, s.m2, s.m3, s.m4].map((m, j) => (
-                        <td key={j} style={{ padding: "8px 10px", border: `1px solid ${C.border}`, textAlign: "center" }}>
-                          {m ? <span style={{ color: C.red, fontWeight: 700 }}>●</span> : <span style={{ color: C.textDim }}>○</span>}
-                        </td>
-                      ))}
-                      <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, textAlign: "center" }}>
-                        <span style={{ background: statusColor[s.status] + "22", color: statusColor[s.status], border: `1px solid ${statusColor[s.status]}44`, borderRadius: 4, padding: "2px 8px", fontSize: 10, fontWeight: 800 }}>{statusLabel[s.status]}</span>
-                      </td>
-                      <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, textAlign: "center" }}>
-                        {s.module ? <Tag small color={C.amber}>Mod {s.module}</Tag> : <span style={{ color: C.textDim }}>—</span>}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div style={{ marginTop: 8, fontSize: 11, color: C.textMuted }}>Click any student row to open their individual knowledge trace →</div>
-          </Card>
-
-          {/* output summary */}
-          <Card style={{ border: `1px solid ${C.accent}44`, background: C.accentDim }}>
-            <SectionLabel>Complete Pipeline Output — 10 Documents</SectionLabel>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {[
-                { label: "Teacher Diagnostic Report", tag: "JSX + DOCX", color: C.accent },
-                { label: "Clean Teacher Lesson", tag: "DOCX", color: C.blue },
-                { label: "Annotated Reviewer Lesson", tag: "Background · DOCX", color: C.textMuted },
-                { label: "Diagnostic Exit Ticket + Teacher Key", tag: "DOCX", color: C.purple },
-                { label: "Decision Log", tag: "DOCX", color: C.textMuted },
-                { label: "Module A — Teacher + Student", tag: "2× DOCX", color: C.red },
-                { label: "Module B — Teacher + Student", tag: "2× DOCX", color: C.red },
-                { label: "Module C — Teacher + Student", tag: "2× DOCX", color: C.amber },
-                { label: "Module D — Teacher + Student", tag: "2× DOCX", color: C.purple },
-              ].map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", background: C.surface, borderRadius: 6, border: `1px solid ${C.border}` }}>
-                  <span style={{ color: item.color }}>📄</span>
-                  <span style={{ color: C.text, fontSize: 12, flex: 1 }}>{item.label}</span>
-                  <Tag small color={item.color}>{item.tag}</Tag>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {tab === "student" && (
-        <div style={{ paddingTop: 20 }}>
-          {/* student selector */}
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-            {students.map(s => (
-              <button key={s.name} onClick={() => setSelectedStudent(s)} style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${selectedStudent?.name === s.name ? statusColor[s.status] + "88" : C.border}`, background: selectedStudent?.name === s.name ? statusColor[s.status] + "18" : C.surface, color: selectedStudent?.name === s.name ? statusColor[s.status] : C.textMuted, fontSize: 12, fontWeight: selectedStudent?.name === s.name ? 700 : 400, cursor: "pointer" }}>
-                {s.name}
-              </button>
-            ))}
-          </div>
-
-          {selectedStudent ? (
-            <StudentProfile student={selectedStudent} />
-          ) : (
-            <div style={{ textAlign: "center", padding: "48px 20px", color: C.textMuted, fontSize: 14 }}>
-              Select a student above to view their individual knowledge trace.
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ══════════════════════════════════════════════════════════════
-// NAV BAR
-// ══════════════════════════════════════════════════════════════
-function NavBar({ screen, onScreen }) {
-  return (
-    <div style={{ position: "sticky", top: 0, zIndex: 100, background: C.bg + "F0", backdropFilter: "blur(14px)", borderBottom: `1px solid ${C.border}` }}>
-      <div style={{ maxWidth: 960, margin: "0 auto", display: "flex", alignItems: "center", height: 50, padding: "0 20px", gap: 0, overflowX: "auto" }}>
-        <div style={{ fontWeight: 900, fontSize: 16, color: C.accent, marginRight: 20, letterSpacing: "-0.02em", flexShrink: 0 }}>RESOLVE</div>
-        {SCREENS.map((label, i) => {
-          const active = screen === i;
-          const past = screen > i;
-          return (
-            <button key={i} onClick={() => onScreen(i)} style={{ background: "none", border: "none", borderBottom: active ? `2px solid ${C.accent}` : "2px solid transparent", cursor: "pointer", color: active ? C.accent : past ? C.text : C.textMuted, fontWeight: active ? 700 : 500, fontSize: 11, padding: "0 10px", height: "100%", display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap", marginBottom: -1, transition: "all 0.15s" }}>
-              {past && <span style={{ color: C.accent, fontSize: 9 }}>✓</span>}
-              <span>{i + 1}. {label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ══════════════════════════════════════════════════════════════
-// APP
-// ══════════════════════════════════════════════════════════════
-export default function App() {
-  const [screen, setScreen] = useState(0);
-  const topRef = useRef(null);
-
-  const goTo = (i) => {
-    setScreen(i);
-    if (topRef.current) topRef.current.scrollIntoView({ behavior: "smooth" });
-  };
-
-  return (
-    <div ref={topRef} style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "'Segoe UI', 'DM Sans', system-ui, sans-serif" }}>
-      <NavBar screen={screen} onScreen={goTo} />
-      {screen === 0 && <UploadScreen       onNext={() => goTo(1)} />}
-      {screen === 1 && <ProcessingScreen   onNext={() => goTo(2)} />}
-      {screen === 2 && <GateScreen         onNext={() => goTo(3)} />}
-      {screen === 3 && <LessonOutputsScreen onNext={() => goTo(4)} />}
-      {screen === 4 && <ExitTicketScreen   onNext={() => goTo(5)} />}
-      {screen === 5 && <RemediationScreen  onNext={() => goTo(6)} />}
-      {screen === 6 && <FinalScreen />}
-    </div>
-  );
-}
+   
