@@ -434,18 +434,26 @@ function GateScreen({ onNext }) {
               {/* inline expanded UI for C */}
               {c.extra === "misconception" && selectedChoice === "C" && (
                 <div style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div style={{ fontSize: 11, color: C.textMuted, padding: "6px 10px", background: C.surface, borderRadius: 6, border: `1px solid ${C.border}` }}>Select the misunderstandings you want the lesson to surface. The pipeline will adjust number selection so each one produces a detectably wrong answer — making it visible during instruction.</div>
                   {[
-                    ["Subtracting instead of comparing","60% need significant support · 25% need some support · 15% solid", C.red],
-                    ["Confusing part-to-part and part-to-whole","40% need significant support · 35% need some support · 25% solid", C.amber],
-                  ].map(([name, dist, col], i) => (
-                    <div key={i} style={{ background: C.surface, borderRadius: 6, padding: "8px 10px", display: "flex", gap: 10, alignItems: "flex-start", border: `1px solid ${col}33` }}>
+                    { name: "Subtracting instead of comparing", desc: "Students find the difference between the two quantities rather than describing the relationship between them.", color: C.red, checked: true },
+                    { name: "Treating a ratio as a single number", desc: "Students collapse the two-quantity structure into one value, losing the relationship entirely.", color: C.red, checked: false },
+                    { name: "Confusing part-to-part and part-to-whole", desc: "Students mix up whether a ratio compares two parts or a part to the total.", color: C.amber, checked: false },
+                    { name: "Writing the ratio in the wrong order", desc: "Students reverse the referents — writing 5:3 when the relationship is 3:5.", color: C.purple, checked: false },
+                  ].map((item, i) => (
+                    <div key={i} style={{ background: C.surface, borderRadius: 6, padding: "8px 10px", display: "flex", gap: 10, alignItems: "flex-start", border: `1px solid ${item.checked ? item.color + "66" : C.border}`, opacity: item.checked ? 1 : 0.7 }}>
+                      <div style={{ width: 16, height: 16, borderRadius: 3, background: item.checked ? item.color : "transparent", border: `2px solid ${item.checked ? item.color : C.textDim}`, flexShrink: 0, marginTop: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {item.checked && <span style={{ color: "#0D1117", fontSize: 9, fontWeight: 900 }}>✓</span>}
+                      </div>
                       <div>
-                        <div style={{ color: C.text, fontSize: 12, fontWeight: 600 }}>{name}</div>
-                        <div style={{ color: C.textMuted, fontSize: 11, marginTop: 2 }}>{dist}</div>
+                        <div style={{ color: item.checked ? item.color : C.text, fontSize: 12, fontWeight: 600 }}>{item.name}</div>
+                        <div style={{ color: C.textMuted, fontSize: 11, marginTop: 2, lineHeight: 1.4 }}>{item.desc}</div>
                       </div>
                     </div>
                   ))}
-                  <div style={{ fontSize: 11, color: C.amber, lineHeight: 1.5 }}>Based on prior exit ticket data. Pipeline will adjust number selection so these misunderstandings produce detectably wrong answers — making them visible and addressable during instruction.</div>
+                  <div style={{ fontSize: 11, color: C.textMuted, padding: "6px 10px", background: C.accentDim, borderRadius: 6, border: `1px solid ${C.accent}33` }}>
+                    <span style={{ color: C.accent, fontWeight: 700 }}>Coming in Track 2: </span>Once response data accumulates from deployed exit tickets, Resolve will recommend which misunderstandings are most active in your students and at what prevalence — so you can confirm rather than select from scratch.
+                  </div>
                 </div>
               )}
             </div>
@@ -844,7 +852,7 @@ function ExitTicketScreen({ onNext }) {
 
           {/* flow map */}
           <Card>
-            <SectionLabel>Misconception–Item Flow Map</SectionLabel>
+            <SectionLabel>Diagnostic Evidence Map</SectionLabel>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
                 <thead>
@@ -904,109 +912,79 @@ function ExitTicketScreen({ onNext }) {
 // ══════════════════════════════════════════════════════════════
 function ResearcherScreen() {
   const [psychOpen, setPsychOpen] = useState(false);
-  const [mlOpen, setMlOpen] = useState(false);
+  const [mlOpen,    setMlOpen]    = useState(false);
 
-  const pathwayNodes = [
-    { id: "prereq1", label: "Multiplicative comparison", standard: "4.OA.A", x: 60, y: 200, color: C.textMuted, type: "prereq" },
-    { id: "prereq2", label: "Fractions as division", standard: "5.NF.B", x: 60, y: 320, color: C.textMuted, type: "prereq" },
-    { id: "m1", label: "Subtracting instead\nof comparing", x: 220, y: 140, color: C.red, type: "misconception", severity: "Gateway" },
-    { id: "m2", label: "Ratio as\nsingle number", x: 220, y: 260, color: C.red, type: "misconception", severity: "High" },
-    { id: "current", label: "6.RP.A.1\nRatio Concepts", x: 380, y: 220, color: C.accent, type: "standard" },
-    { id: "m3", label: "Part-to-part vs\npart-to-whole", x: 380, y: 360, color: C.amber, type: "misconception", severity: "Medium" },
-    { id: "m4", label: "Wrong order", x: 380, y: 440, color: C.purple, type: "misconception", severity: "Low" },
-    { id: "rpa2", label: "6.RP.A.2\nUnit Rate", x: 560, y: 160, color: C.blue, type: "standard" },
-    { id: "rpa3", label: "6.RP.A.3\nEquivalent Ratios", x: 560, y: 300, color: C.blue, type: "standard" },
-    { id: "rp7", label: "7.RP.A\nProportional\nRelationships", x: 720, y: 220, color: C.purple, type: "standard" },
+  // ── Abstracted response sequence ─────────────────────────
+  // Content is structurally representative but proprietary
+  // schema content is intentionally withheld
+  const responseItems = [
+    { label: "CR",  correct: false, dimA: "active", dimB: "Step 2", dimC: "DL2", dimD: "present", thetaPrior: -0.61, thetaPost: -0.74 },
+    { label: "D2",  correct: false, dimA: "active", dimB: "Step 2", dimC: "DL1", dimD: "present", thetaPrior: -0.74, thetaPost: -0.79 },
+    { label: "D3",  correct: false, dimA: "active", dimB: "Step 3", dimC: "DL3", dimD: "none",    thetaPrior: -0.79, thetaPost: -0.81 },
+    { label: "D4",  correct: true,  dimA: "none",   dimB: "Step 3", dimC: "DL2", dimD: "none",    thetaPrior: -0.81, thetaPost: -0.77, note: "Correct under low-complexity elicitation conditions — consistent with active latent state at higher difficulty." },
+    { label: "D5",  correct: false, dimA: "active", dimB: "Step 5", dimC: "DL4", dimD: "present", thetaPrior: -0.77, thetaPost: -0.81 },
   ];
 
+  // ── Abstracted Q-structure ────────────────────────────────
+  // Rows = latent states (proprietary taxonomy)
+  // Cols = items D1–D5
+  // Values = coverage weight (0 = not targeted, 1 = peripheral, 2 = primary)
+  const qGrid = [
+    { stateLabel: "Latent State 1", priority: "primary",    cells: [2, 2, 0, 0, 2] },
+    { stateLabel: "Latent State 2", priority: "primary",    cells: [0, 2, 2, 2, 2] },
+    { stateLabel: "Latent State 3", priority: "secondary",  cells: [1, 2, 2, 2, 2] },
+    { stateLabel: "Latent State 4", priority: "secondary",  cells: [1, 0, 2, 0, 2] },
+    { stateLabel: "Latent State 5", priority: "tertiary",   cells: [0, 0, 0, 2, 2] },
+    { stateLabel: "Prerequisite gap", priority: "prereq",   cells: [2, 0, 0, 0, 0] },
+  ];
+  const qCellColor = (v) => v === 2 ? C.accent : v === 1 ? C.amber : C.textDim;
+  const qCellBg   = (v) => v === 2 ? C.accentDim : v === 1 ? C.amberDim : "transparent";
+  const priorityColor = { primary: C.red, secondary: C.amber, tertiary: C.purple, prereq: C.textMuted };
+
+  // ── Pathway nodes / edges (keep structure, abstract labels) ──
+  const pathwayNodes = [
+    { id: "prereq1", label: "Prerequisite\nStandard A", standard: "Prior grade", x: 60,  y: 200, color: C.textMuted, type: "prereq" },
+    { id: "prereq2", label: "Prerequisite\nStandard B", standard: "Prior grade", x: 60,  y: 320, color: C.textMuted, type: "prereq" },
+    { id: "m1",      label: "Latent\nState 1",          x: 220, y: 140, color: C.red,      type: "misconception", severity: "Gateway" },
+    { id: "m2",      label: "Latent\nState 2",          x: 220, y: 260, color: C.red,      type: "misconception", severity: "High" },
+    { id: "current", label: "Current\nStandard",        x: 380, y: 220, color: C.accent,   type: "standard" },
+    { id: "m3",      label: "Latent\nState 3",          x: 380, y: 360, color: C.amber,    type: "misconception", severity: "Medium" },
+    { id: "m4",      label: "Latent\nState 4",          x: 380, y: 440, color: C.purple,   type: "misconception", severity: "Low" },
+    { id: "adj1",    label: "Adjacent\nStandard A",     x: 560, y: 160, color: C.blue,     type: "standard" },
+    { id: "adj2",    label: "Adjacent\nStandard B",     x: 560, y: 300, color: C.blue,     type: "standard" },
+    { id: "down1",   label: "Downstream\nStandard",     x: 720, y: 220, color: C.purple,   type: "standard" },
+  ];
   const pathwayEdges = [
     { from: "prereq1", to: "current", width: 2, color: C.textDim },
     { from: "prereq2", to: "current", width: 2, color: C.textDim },
-    { from: "m1", to: "current", width: 3, color: C.red, label: "blocks" },
-    { from: "m2", to: "current", width: 2, color: C.red, label: "distorts" },
-    { from: "current", to: "rpa2", width: 3, color: C.accent },
-    { from: "current", to: "rpa3", width: 2, color: C.accent },
-    { from: "m3", to: "rpa2", width: 2, color: C.amber, label: "risk" },
-    { from: "m3", to: "rpa3", width: 1.5, color: C.amber, label: "risk" },
-    { from: "rpa2", to: "rp7", width: 3, color: C.blue },
-    { from: "rpa3", to: "rp7", width: 2, color: C.blue },
+    { from: "m1",      to: "current", width: 3, color: C.red,   label: "blocks" },
+    { from: "m2",      to: "current", width: 2, color: C.red,   label: "distorts" },
+    { from: "current", to: "adj1",    width: 3, color: C.accent },
+    { from: "current", to: "adj2",    width: 2, color: C.accent },
+    { from: "m3",      to: "adj1",    width: 2, color: C.amber, label: "risk" },
+    { from: "m3",      to: "adj2",    width: 1.5, color: C.amber, label: "risk" },
+    { from: "adj1",    to: "down1",   width: 3, color: C.blue },
+    { from: "adj2",    to: "down1",   width: 2, color: C.blue },
   ];
-
-  const responseSequences = [
-    {
-      student: "Diego R.", status: "not-ready",
-      note: "Full record — all labeling dimensions shown per item",
-      items: [
-        {
-          label: "CR", response: "There are 2 more oats than flour",
-          correct: false,
-          misconception_tags: ["Subtracting instead of comparing"],
-          cognitive_step: { n: 2, desc: "Identify relationship type — multiplicative vs. additive" },
-          difficulty: { level: "DL2", params: "Small integers · verbal context · familiar" },
-          prerequisite_tags: ["Multiplicative comparison (4.OA.A)"],
-          theta: { prior: -0.61, posterior: -0.74 },
-        },
-        {
-          label: "D2", response: "A — there are 2 more blue than red",
-          correct: false,
-          misconception_tags: ["Subtracting instead of comparing"],
-          cognitive_step: { n: 2, desc: "Identify relationship type — multiplicative vs. additive" },
-          difficulty: { level: "DL1", params: "Small integers · symbolic · familiar · identification demand" },
-          prerequisite_tags: ["Multiplicative comparison (4.OA.A)"],
-          theta: { prior: -0.74, posterior: -0.79 },
-        },
-        {
-          label: "D3", response: "C — selects difference (12−8=4) as the ratio",
-          correct: false,
-          misconception_tags: ["Subtracting instead of comparing", "Single-number collapse"],
-          cognitive_step: { n: 3, desc: "Produce ratio expression — coordinate both quantities" },
-          difficulty: { level: "DL3", params: "Non-integer context · multiple representations · novel context" },
-          prerequisite_tags: [],
-          theta: { prior: -0.79, posterior: -0.81 },
-        },
-        {
-          label: "D4", response: "B (correct) — selects 3:5",
-          correct: true,
-          misconception_tags: [],
-          cognitive_step: { n: 3, desc: "Produce ratio expression — coordinate both quantities" },
-          difficulty: { level: "DL2", params: "Small integers · colon notation only · familiar" },
-          prerequisite_tags: [],
-          theta: { prior: -0.81, posterior: -0.77 },
-          note: "Correct under low difficulty — success here is consistent with the gateway misconception still being active. High-difficulty items (DL3+) continue to elicit additive responses.",
-        },
-        {
-          label: "D5", response: "A — interprets ratio as a difference in an applied context",
-          correct: false,
-          misconception_tags: ["Subtracting instead of comparing"],
-          cognitive_step: { n: 5, desc: "Interpret ratio in applied context — irrelevant information present" },
-          difficulty: { level: "DL4", params: "Non-integer ratios · contextualised · irrelevant info present · interpretation demand" },
-          prerequisite_tags: ["Multiplicative comparison (4.OA.A)", "Fractions as division (5.NF.B)"],
-          theta: { prior: -0.77, posterior: -0.81 },
-        },
-      ]
-    },
-  ];
-
-  const dataSchema = [
-    { field: "student_id",         type: "string",   desc: "Anonymized student identifier", group: "context" },
-    { field: "standard_code",      type: "string",   desc: "CCSSM standard addressed by this item (e.g. 6.RP.A.1)", group: "context" },
-    { field: "lesson_id",          type: "string",   desc: "Curriculum lesson identifier", group: "context" },
-    { field: "item_id",            type: "string",   desc: "Item position within instrument (D1–D5)", group: "context" },
-    { field: "response",           type: "string",   desc: "Student response — option selected or CR production", group: "context" },
-    { field: "misconception_tag",  type: "string[]", desc: "Misconception(s) the selected response is evidence for — defined in the content specification at item design time, before any data is collected", group: "label" },
-    { field: "cognitive_step",     type: "integer",  desc: "Which step in the standard's cognitive architecture this item targets (1–n) — locates the failure point within the reasoning chain, not just whether the item was correct", group: "label" },
-    { field: "difficulty_level",   type: "string",   desc: "Parameterized difficulty level (DL1–DL5) — encodes the specific conditions under which the student was tested: number properties, representational demand, contextual load, and cognitive demand type", group: "label" },
-    { field: "prerequisite_tag",   type: "string[]", desc: "Prerequisite skill(s) this item is sensitive to — enables cross-standard pathway inference and distinguishes prerequisite gaps from active misconceptions", group: "label" },
-    { field: "theta_prior",        type: "float",    desc: "Proficiency estimate entering this lesson — the posterior from the previous lesson becomes the prior here", group: "estimate" },
-    { field: "theta_posterior",    type: "float",    desc: "Updated proficiency estimate after this response — Bayesian update using 3PL item parameters and Q-matrix structure", group: "estimate" },
-    { field: "timestamp",          type: "datetime", desc: "Response timestamp", group: "context" },
-  ];
-
-  const schemaGroupColor = { context: C.textMuted, label: C.accent, estimate: C.blue };
-
-  // simple SVG pathway graph
-  const svgW = 800, svgH = 500;
   const getNode = (id) => pathwayNodes.find(n => n.id === id);
+  const svgW = 800, svgH = 500;
+
+  // ── Data schema — field names + groups visible; descriptions proprietary ──
+  const dataSchema = [
+    { field: "student_id",        type: "string",   group: "context",  desc: "Anonymized student identifier" },
+    { field: "standard_code",     type: "string",   group: "context",  desc: "CCSSM standard" },
+    { field: "lesson_id",         type: "string",   group: "context",  desc: "Curriculum lesson" },
+    { field: "item_id",           type: "string",   group: "context",  desc: "Item position in instrument" },
+    { field: "response",          type: "string",   group: "context",  desc: "Student response" },
+    { field: "timestamp",         type: "datetime", group: "context",  desc: "Response timestamp" },
+    { field: "latent_state_tag",  type: "string[]", group: "label",    desc: null },
+    { field: "cognitive_step",    type: "integer",  group: "label",    desc: null },
+    { field: "elicitation_spec",  type: "object",   group: "label",    desc: null },
+    { field: "prerequisite_tag",  type: "string[]", group: "label",    desc: null },
+    { field: "theta_prior",       type: "float",    group: "estimate", desc: "Proficiency estimate entering this lesson" },
+    { field: "theta_posterior",   type: "float",    group: "estimate", desc: "Updated proficiency estimate after this response" },
+  ];
+  const schemaGroupColor = { context: C.textMuted, label: C.accent, estimate: C.blue };
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 20px" }}>
@@ -1015,78 +993,130 @@ function ResearcherScreen() {
       <div style={{ marginBottom: 24 }}>
         <SectionLabel>Researcher View</SectionLabel>
         <h2 style={{ color: C.text, fontSize: 22, margin: 0, fontWeight: 800 }}>What this architecture generates</h2>
-        <div style={{ color: C.textMuted, fontSize: 13, marginTop: 4 }}>Learning pathway structure · Tagged response sequences · Data schema · Technical deep-dives</div>
+        <div style={{ color: C.textMuted, fontSize: 13, marginTop: 4 }}>
+          Learning pathway structure · Tagged response sequences · Data schema · Technical deep-dives
+        </div>
       </div>
 
+      {/* proprietary architecture callout */}
       <Card style={{ marginBottom: 20, borderLeft: `4px solid ${C.gold}` }}>
         <div style={{ fontSize: 10, color: C.gold, fontWeight: 800, letterSpacing: "0.1em", marginBottom: 10 }}>THE ARCHITECTURE</div>
         <div style={{ color: C.text, fontSize: 14, fontWeight: 700, lineHeight: 1.5, marginBottom: 10 }}>
-          Resolve generates something most adaptive systems cannot produce: a labeled training corpus where latent states are <em style={{ color: C.accent }}>defined before data is collected</em>, not inferred from behavioral proxies after the fact.
+          Resolve generates something most adaptive systems cannot produce: a labeled training corpus where latent states are{" "}
+          <em style={{ color: C.accent }}>defined before data is collected</em>, not inferred from behavioral proxies after the fact.
         </div>
-        <div style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.75, marginBottom: 14 }}>
-          Every response to a Resolve exit ticket is a structured observation against a psychometrician-authored cognitive model. The labels are not applied at analysis time — they are embedded in the instrument's design. This means the measurement model and the training corpus are the same thing.
+        <div style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.75, marginBottom: 16 }}>
+          Every response to a Resolve diagnostic item is a structured observation against a psychometrician-authored cognitive model.
+          The labels are not applied at analysis time — they are embedded in the instrument's design.
+          Four labeling dimensions are jointly pre-specified. Each is proprietary. Together they constitute the structure
+          that makes the corpus non-replicable from behavioral data alone.
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+
+        {/* four dimension cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
           {[
-            { color: C.red, label: "Misconception tags", body: "Each wrong-answer option maps to a specific, research-documented misconception defined in the content specification before the item is written. A response doesn't just register as incorrect — it registers as evidence for a particular hypothesis about student thinking. This is what makes the latent state interpretable rather than inferred." },
-            { color: C.blue, label: "Cognitive step tags", body: "Every item targets a specific step in the standard's cognitive architecture — the sequenced mental operations a student must execute to demonstrate understanding. Tagging responses by cognitive step means the model can locate where in the reasoning chain a student is failing, not just whether they failed. A student who succeeds at Step 2 but fails at Step 4 has a fundamentally different profile from one who fails at Step 1." },
-            { color: C.amber, label: "Difficulty level parameters", body: "Items are parameterized across five difficulty dimensions — number properties, representational demand, contextual load, and cognitive demand type. A student who fails only under high contextual load but succeeds under low load has a different instructional need from one who fails across all conditions. Difficulty parameters make this distinction visible in the training data." },
-            { color: C.purple, label: "Prerequisite tags", body: "Items sensitive to specific prerequisite gaps are tagged accordingly. This is what connects current-standard performance back to prior learning and forward to adjacent standards — enabling the cross-standard pathway inference that behavioral proxy systems cannot produce." },
+            {
+              color: C.red,
+              label: "Latent state taxonomy",
+              tag: "PROPRIETARY",
+              body: "A psychometrician-authored misconception taxonomy defines the discrete latent state space for each standard. States are ordered by diagnostic priority and cognitive step. Every wrong-answer option in the diagnostic instrument maps to a specific state in this taxonomy — defined at item design time, before any student responds.",
+            },
+            {
+              color: C.amber,
+              label: "Difficulty & elicitation condition specification",
+              tag: "PROPRIETARY",
+              body: "Items are jointly parameterized across two dimensions: what makes the item hard, and the conditions under which each latent state is revealed. The elicitation conditions are construction constraints — an item is only valid if it can discriminate the target state from adjacent states. This discrimination guarantee is built in at design time, not assessed after the fact.",
+            },
+            {
+              color: C.blue,
+              label: "Cognitive step architecture",
+              tag: "PROPRIETARY",
+              body: "Each item targets a specific step in the standard's cognitive architecture — the sequenced mental operations a student must execute to demonstrate understanding. Tagging responses by cognitive step locates the failure point within the reasoning chain. A student failing at Step 2 has a fundamentally different profile from one failing at Step 4.",
+            },
+            {
+              color: C.purple,
+              label: "Prerequisite dependency graph",
+              tag: "PSYCHOMETRICIAN-AUTHORED",
+              body: "Items sensitive to specific prerequisite gaps are tagged accordingly. The prerequisite structure is authored before data collection — available as a structural constraint on downstream ML models rather than a pattern those models must infer from co-occurrence data.",
+            },
           ].map((d, i) => (
-            <div key={i} style={{ background: C.surfaceUp, borderRadius: 8, padding: "10px 14px", borderLeft: `3px solid ${d.color}` }}>
-              <div style={{ color: d.color, fontWeight: 700, fontSize: 12, marginBottom: 4 }}>{d.label}</div>
+            <div key={i} style={{ background: C.surfaceUp, borderRadius: 8, padding: "12px 14px", borderLeft: `3px solid ${d.color}` }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                <span style={{ color: d.color, fontWeight: 700, fontSize: 12 }}>{d.label}</span>
+                <span style={{ background: d.color + "22", color: d.color, border: `1px solid ${d.color}44`, borderRadius: 4, padding: "1px 6px", fontSize: 9, fontWeight: 800, letterSpacing: "0.07em", fontFamily: "monospace", whiteSpace: "nowrap" }}>{d.tag}</span>
+              </div>
               <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.7 }}>{d.body}</div>
             </div>
           ))}
         </div>
-        <div style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.75 }}>
-          Below: the learning pathway graph this generates across standards, the labeled response sequences it produces per student, and the data schema that makes downstream ML tractable. This is the problem that has prevented knowledge tracing models from producing interpretable, defensible state estimates — and it is solved here at the source.
+
+        {/* proprietary notice */}
+        <div style={{ background: C.gold + "11", border: `1px solid ${C.gold}44`, borderRadius: 8, padding: "12px 16px", display: "flex", gap: 12, alignItems: "flex-start" }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>🔒</span>
+          <div>
+            <div style={{ color: C.gold, fontWeight: 800, fontSize: 12, marginBottom: 4 }}>Proprietary cognitive architecture — forms the latent state space</div>
+            <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.65 }}>
+              The specific content of the latent state taxonomy, difficulty and elicitation condition parameters, and cognitive step architecture is proprietary to Continuous Measurement.
+              This architecture is not decorative — it <em>is</em> the structure that defines the measurement model and the training corpus simultaneously.
+              Schema content, misconception taxonomy, and item construction specifications are available under technical partnership agreement.
+            </div>
+          </div>
         </div>
       </Card>
 
       {/* learning pathway graph */}
       <Card style={{ marginBottom: 20 }}>
-        <SectionLabel>Learning Pathway Graph — Cross-Standard</SectionLabel>
-        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 12 }}>Nodes = standards and misconception states. Edges = observed transitions and risk relationships across the student population. Thickness = frequency.</div>
+        <SectionLabel>Learning Pathway Graph — Cross-Standard Structure</SectionLabel>
+        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 4 }}>
+          Standards, latent states, and prerequisite dependencies. Node labels are structural — specific standard identifiers and misconception content are illustrative.
+        </div>
+        <div style={{ fontSize: 10, color: C.gold, fontStyle: "italic", marginBottom: 12 }}>
+          Latent state content and prerequisite taxonomy: proprietary · available under partnership agreement
+        </div>
         <div style={{ overflowX: "auto" }}>
           <svg width={svgW} height={svgH} style={{ display: "block", minWidth: svgW }}>
-            {/* edges */}
             {pathwayEdges.map((e, i) => {
-              const from = getNode(e.from);
-              const to = getNode(e.to);
+              const from = getNode(e.from); const to = getNode(e.to);
               if (!from || !to) return null;
               return (
                 <g key={i}>
                   <line x1={from.x + 50} y1={from.y + 20} x2={to.x + 50} y2={to.y + 20}
-                    stroke={e.color} strokeWidth={e.width} strokeDasharray={e.label === "blocks" ? "6,3" : e.label === "risk" ? "4,3" : "none"} strokeOpacity={0.6} />
+                    stroke={e.color} strokeWidth={e.width}
+                    strokeDasharray={e.label === "blocks" ? "6,3" : e.label === "risk" ? "4,3" : "none"}
+                    strokeOpacity={0.6} />
                   {e.label && (
-                    <text x={(from.x + to.x) / 2 + 50} y={(from.y + to.y) / 2 + 16} fill={e.color} fontSize={9} textAnchor="middle" opacity={0.8}>{e.label}</text>
+                    <text x={(from.x + to.x) / 2 + 50} y={(from.y + to.y) / 2 + 16}
+                      fill={e.color} fontSize={9} textAnchor="middle" opacity={0.8}>{e.label}</text>
                   )}
                 </g>
               );
             })}
-            {/* nodes */}
             {pathwayNodes.map((n, i) => (
               <g key={i}>
                 <rect x={n.x} y={n.y} width={100} height={40} rx={6}
                   fill={n.color + "22"} stroke={n.color} strokeWidth={n.type === "standard" ? 2 : 1.5}
                   strokeDasharray={n.type === "misconception" ? "4,2" : "none"} />
                 {n.label.split("\n").map((line, j) => (
-                  <text key={j} x={n.x + 50} y={n.y + 15 + j * 13} fill={n.color} fontSize={9} fontWeight={n.type === "standard" ? 700 : 400} textAnchor="middle">{line}</text>
+                  <text key={j} x={n.x + 50} y={n.y + 15 + j * 13}
+                    fill={n.color} fontSize={9}
+                    fontWeight={n.type === "standard" ? 700 : 400}
+                    textAnchor="middle">{line}</text>
                 ))}
-                {n.standard && <text x={n.x + 50} y={n.y + 36} fill={n.color} fontSize={8} textAnchor="middle" opacity={0.6}>{n.standard}</text>}
+                {n.standard && (
+                  <text x={n.x + 50} y={n.y + 36} fill={n.color} fontSize={8} textAnchor="middle" opacity={0.6}>{n.standard}</text>
+                )}
               </g>
             ))}
-            {/* legend */}
             {[
-              { x: 20, y: 460, color: C.accent, label: "Current standard", dash: "none" },
-              { x: 160, y: 460, color: C.blue, label: "Adjacent standards", dash: "none" },
-              { x: 300, y: 460, color: C.red, label: "Gateway misconception", dash: "4,2" },
-              { x: 460, y: 460, color: C.amber, label: "Medium misconception", dash: "4,2" },
-              { x: 600, y: 460, color: C.textMuted, label: "Prerequisite", dash: "none" },
+              { x: 20,  y: 460, color: C.accent,   label: "Current standard",   dash: "none" },
+              { x: 160, y: 460, color: C.blue,      label: "Adjacent standards", dash: "none" },
+              { x: 300, y: 460, color: C.red,       label: "Gateway state",      dash: "4,2" },
+              { x: 440, y: 460, color: C.amber,     label: "Secondary state",    dash: "4,2" },
+              { x: 580, y: 460, color: C.textMuted, label: "Prerequisite",       dash: "none" },
             ].map((l, i) => (
               <g key={i}>
-                <rect x={l.x} y={l.y - 8} width={14} height={14} rx={3} fill={l.color + "22"} stroke={l.color} strokeWidth={1.5} strokeDasharray={l.dash} />
+                <rect x={l.x} y={l.y - 8} width={14} height={14} rx={3}
+                  fill={l.color + "22"} stroke={l.color} strokeWidth={1.5} strokeDasharray={l.dash} />
                 <text x={l.x + 18} y={l.y + 4} fill={C.textMuted} fontSize={9}>{l.label}</text>
               </g>
             ))}
@@ -1094,76 +1124,170 @@ function ResearcherScreen() {
         </div>
       </Card>
 
-      {/* tagged response sequences */}
+      {/* abstracted response sequence */}
       <Card style={{ marginBottom: 20 }}>
-        <SectionLabel>Tagged Response Sequence — Full Record</SectionLabel>
-        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 14 }}>One student shown in full. Each response record carries all labeling dimensions simultaneously — misconception evidence, cognitive step, difficulty parameters, and prerequisite sensitivity. Labels defined at item design time, not inferred post-hoc.</div>
-        {responseSequences.map((seq, i) => (
-          <div key={i}>
-            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
-              <span style={{ color: C.text, fontWeight: 700, fontSize: 13 }}>{seq.student}</span>
-              <Tag small color={C.red}>NOT READY</Tag>
-              <span style={{ color: C.textDim, fontSize: 11 }}>· {seq.note}</span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {seq.items.map((item, j) => (
-                <div key={j} style={{ border: `1px solid ${item.correct ? C.accent + "44" : C.red + "33"}`, borderRadius: 8, overflow: "hidden" }}>
-                  {/* item header */}
-                  <div style={{ display: "flex", gap: 10, alignItems: "center", padding: "8px 12px", background: item.correct ? C.accentDim : C.redDim, flexWrap: "wrap" }}>
-                    <Tag small color={C.blue}>{item.label}</Tag>
-                    <span style={{ color: C.text, fontSize: 12, flex: 1, fontStyle: "italic" }}>{item.response}</span>
-                    <span style={{ color: item.correct ? C.accent : C.red, fontWeight: 800, fontSize: 12 }}>{item.correct ? "✓ correct" : "✗ incorrect"}</span>
-                  </div>
-                  {/* full label record */}
-                  <div style={{ padding: "10px 12px", background: C.surface, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                    <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.red}` }}>
-                      <div style={{ fontSize: 9, color: C.red, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>MISCONCEPTION TAGS</div>
-                      {item.misconception_tags.length > 0
-                        ? item.misconception_tags.map((t, k) => <div key={k} style={{ color: C.text, fontSize: 11, marginBottom: 2 }}>→ {t}</div>)
-                        : <div style={{ color: C.textDim, fontSize: 11 }}>none — correct response</div>}
-                    </div>
-                    <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.blue}` }}>
-                      <div style={{ fontSize: 9, color: C.blue, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>COGNITIVE STEP</div>
-                      <div style={{ color: C.text, fontSize: 11 }}>Step {item.cognitive_step.n} — {item.cognitive_step.desc}</div>
-                    </div>
-                    <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.amber}` }}>
-                      <div style={{ fontSize: 9, color: C.amber, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>DIFFICULTY PARAMETERS</div>
-                      <div style={{ color: C.accent, fontSize: 11, fontWeight: 700, marginBottom: 2 }}>{item.difficulty.level}</div>
-                      <div style={{ color: C.textMuted, fontSize: 11 }}>{item.difficulty.params}</div>
-                    </div>
-                    <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.purple}` }}>
-                      <div style={{ fontSize: 9, color: C.purple, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>PREREQUISITE TAGS</div>
-                      {item.prerequisite_tags.length > 0
-                        ? item.prerequisite_tags.map((t, k) => <div key={k} style={{ color: C.text, fontSize: 11, marginBottom: 2 }}>→ {t}</div>)
-                        : <div style={{ color: C.textDim, fontSize: 11 }}>none</div>}
-                    </div>
-                  </div>
-                  {/* theta update */}
-                  <div style={{ padding: "6px 12px", background: C.surfaceUp, borderTop: `1px solid ${C.border}`, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                      <span style={{ fontSize: 9, color: C.textMuted, fontWeight: 700, letterSpacing: "0.07em" }}>θ PRIOR</span>
-                      <span style={{ color: item.theta.prior < 0 ? C.red : C.amber, fontFamily: "monospace", fontSize: 11, fontWeight: 700 }}>{item.theta.prior.toFixed(2)}</span>
-                    </div>
-                    <span style={{ color: C.textDim, fontSize: 11 }}>→</span>
-                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                      <span style={{ fontSize: 9, color: C.textMuted, fontWeight: 700, letterSpacing: "0.07em" }}>θ POSTERIOR</span>
-                      <span style={{ color: item.theta.posterior < 0 ? C.red : C.amber, fontFamily: "monospace", fontSize: 11, fontWeight: 700 }}>{item.theta.posterior.toFixed(2)}</span>
-                    </div>
-                    {item.note && <div style={{ color: C.textMuted, fontSize: 10, fontStyle: "italic", flex: 1 }}>{item.note}</div>}
+        <SectionLabel>Tagged Response Sequence — Structural View</SectionLabel>
+        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 4 }}>
+          One student · five items · all four labeling dimensions shown per response.
+          Labels are defined at item design time — not inferred post-hoc.
+        </div>
+        <div style={{ fontSize: 10, color: C.gold, fontStyle: "italic", marginBottom: 14 }}>
+          Latent state content, elicitation condition parameters, and cognitive step definitions: proprietary · available under partnership agreement
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {responseItems.map((item, j) => (
+            <div key={j} style={{ border: `1px solid ${item.correct ? C.accent + "44" : C.red + "33"}`, borderRadius: 8, overflow: "hidden" }}>
+              {/* header */}
+              <div style={{ display: "flex", gap: 10, alignItems: "center", padding: "8px 12px", background: item.correct ? C.accentDim : C.redDim, flexWrap: "wrap" }}>
+                <Tag small color={C.blue}>{item.label}</Tag>
+                <span style={{ color: C.textMuted, fontSize: 12, flex: 1, fontStyle: "italic" }}>Student response recorded</span>
+                <span style={{ color: item.correct ? C.accent : C.red, fontWeight: 800, fontSize: 12 }}>{item.correct ? "✓ correct" : "✗ incorrect"}</span>
+              </div>
+              {/* four dimension tiles */}
+              <div style={{ padding: "10px 12px", background: C.surface, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {/* latent state */}
+                <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.red}` }}>
+                  <div style={{ fontSize: 9, color: C.red, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>LATENT STATE TAG</div>
+                  {item.dimA === "active"
+                    ? <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.red, flexShrink: 0 }} />
+                        <span style={{ color: C.text, fontSize: 11 }}>State active — proprietary taxonomy</span>
+                        <span style={{ background: C.red + "22", color: C.red, border: `1px solid ${C.red}44`, borderRadius: 4, padding: "1px 5px", fontSize: 9, fontWeight: 800, fontFamily: "monospace" }}>🔒</span>
+                      </div>
+                    : <div style={{ color: C.textDim, fontSize: 11 }}>None — correct response</div>
+                  }
+                </div>
+                {/* cognitive step */}
+                <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.blue}` }}>
+                  <div style={{ fontSize: 9, color: C.blue, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>COGNITIVE STEP</div>
+                  <div style={{ color: C.text, fontSize: 11 }}>{item.dimB}
+                    <span style={{ color: C.textMuted, fontSize: 10, marginLeft: 6 }}>— step definition: proprietary</span>
                   </div>
                 </div>
-              ))}
+                {/* difficulty + elicitation */}
+                <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.amber}`, gridColumn: "1 / -1" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <div style={{ fontSize: 9, color: C.amber, fontWeight: 800, letterSpacing: "0.08em" }}>DIFFICULTY & ELICITATION CONDITIONS</div>
+                    <span style={{ background: C.amber + "22", color: C.amber, border: `1px solid ${C.amber}44`, borderRadius: 4, padding: "1px 5px", fontSize: 9, fontWeight: 800, fontFamily: "monospace" }}>PROPRIETARY SPEC</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ fontSize: 10, color: C.textMuted }}>Level</span>
+                      <span style={{ color: C.accent, fontWeight: 700, fontSize: 12, fontFamily: "monospace" }}>{item.dimC}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                      <span style={{ fontSize: 10, color: C.textMuted }}>Dimensions</span>
+                      {[0,1,2,3].map(d => (
+                        <div key={d} style={{ width: 28, height: 8, borderRadius: 3, background: C.surfaceUp, border: `1px solid ${C.border}`, overflow: "hidden" }}>
+                          <div style={{ width: `${[75,50,90,40][d]}%`, height: "100%", background: C.amber, opacity: 0.7 }} />
+                        </div>
+                      ))}
+                    </div>
+                    <span style={{ fontSize: 10, color: C.textMuted, fontStyle: "italic" }}>Parameterization withheld</span>
+                  </div>
+                </div>
+                {/* prerequisite */}
+                <div style={{ background: C.surfaceUp, borderRadius: 6, padding: "8px 10px", borderLeft: `2px solid ${C.purple}`, gridColumn: "1 / -1" }}>
+                  <div style={{ fontSize: 9, color: C.purple, fontWeight: 800, letterSpacing: "0.08em", marginBottom: 4 }}>PREREQUISITE TAGS</div>
+                  {item.dimD === "present"
+                    ? <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.purple, flexShrink: 0 }} />
+                        <span style={{ color: C.text, fontSize: 11 }}>Prerequisite sensitivity flagged — dependency graph proprietary</span>
+                      </div>
+                    : <div style={{ color: C.textDim, fontSize: 11 }}>None flagged</div>
+                  }
+                </div>
+              </div>
+              {/* theta update */}
+              <div style={{ padding: "6px 12px", background: C.surfaceUp, borderTop: `1px solid ${C.border}`, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <span style={{ fontSize: 9, color: C.textMuted, fontWeight: 700, letterSpacing: "0.07em" }}>θ PRIOR</span>
+                  <span style={{ color: item.thetaPrior < 0 ? C.red : C.amber, fontFamily: "monospace", fontSize: 11, fontWeight: 700 }}>{item.thetaPrior.toFixed(2)}</span>
+                </div>
+                <span style={{ color: C.textDim, fontSize: 11 }}>→</span>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <span style={{ fontSize: 9, color: C.textMuted, fontWeight: 700, letterSpacing: "0.07em" }}>θ POSTERIOR</span>
+                  <span style={{ color: item.thetaPost < 0 ? C.red : C.amber, fontFamily: "monospace", fontSize: 11, fontWeight: 700 }}>{item.thetaPost.toFixed(2)}</span>
+                </div>
+                {item.note && <div style={{ color: C.textMuted, fontSize: 10, fontStyle: "italic", flex: 1 }}>{item.note}</div>}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+      </Card>
+
+      {/* abstracted Q-structure */}
+      <Card style={{ marginBottom: 20 }}>
+        <SectionLabel>Diagnostic Coverage Structure — Q-Matrix View</SectionLabel>
+        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 4 }}>
+          Rows = latent states · Columns = diagnostic items D1–D5 · Cell weight = targeting intensity
+        </div>
+        <div style={{ fontSize: 10, color: C.gold, fontStyle: "italic", marginBottom: 14 }}>
+          Latent state identities and item construction logic: proprietary · available under partnership agreement
+        </div>
+        <div style={{ overflowX: "auto", marginBottom: 12 }}>
+          <table style={{ borderCollapse: "collapse", fontSize: 11, width: "100%" }}>
+            <thead>
+              <tr style={{ background: C.surfaceUp }}>
+                <th style={{ padding: "8px 12px", textAlign: "left", color: C.textMuted, border: `1px solid ${C.border}`, minWidth: 160 }}>Latent State</th>
+                <th style={{ padding: "8px 12px", textAlign: "center", color: C.textMuted, border: `1px solid ${C.border}` }}>Priority</th>
+                {["D1","D2","D3","D4","D5"].map(h => (
+                  <th key={h} style={{ padding: "8px 12px", textAlign: "center", color: C.blue, border: `1px solid ${C.border}`, fontFamily: "monospace" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {qGrid.map((row, i) => (
+                <tr key={i} style={{ background: i % 2 === 0 ? C.surface : C.surfaceUp }}>
+                  <td style={{ padding: "8px 12px", border: `1px solid ${C.border}`, color: C.textMuted, fontStyle: "italic", fontSize: 11 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: priorityColor[row.priority], flexShrink: 0 }} />
+                      {row.stateLabel}
+                      <span style={{ color: C.gold, fontSize: 9, fontFamily: "monospace" }}>🔒</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: "8px 12px", border: `1px solid ${C.border}`, textAlign: "center" }}>
+                    <Tag small color={priorityColor[row.priority]}>{row.priority}</Tag>
+                  </td>
+                  {row.cells.map((v, j) => (
+                    <td key={j} style={{ padding: "8px 10px", border: `1px solid ${C.border}`, textAlign: "center", background: qCellBg(v) }}>
+                      {v > 0
+                        ? <div style={{ width: 14, height: 14, borderRadius: 3, background: qCellColor(v), margin: "0 auto", opacity: v === 2 ? 1 : 0.5 }} />
+                        : <span style={{ color: C.textDim, fontSize: 10 }}>—</span>
+                      }
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+          {[
+            { color: C.accent, label: "Primary targeting — item constructed to detect this state" },
+            { color: C.amber,  label: "Peripheral — state detectable but not the primary target" },
+            { color: C.textDim, label: "Not targeted by this item" },
+          ].map((l, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color, opacity: l.color === C.textDim ? 0.4 : 1 }} />
+              <span style={{ color: C.textMuted, fontSize: 10 }}>{l.label}</span>
+            </div>
+          ))}
+        </div>
       </Card>
 
       {/* data schema */}
       <Card style={{ marginBottom: 20 }}>
         <SectionLabel>Data Schema — Per Response Record</SectionLabel>
-        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 8 }}>What gets generated per student per item per lesson. Every label field defined before data collection begins — not assigned at analysis time.</div>
-        <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
-          {[["label", C.accent, "Labeling dimensions — the diagnostic core"], ["estimate", C.blue, "Psychometric estimates"], ["context", C.textMuted, "Record context"]].map(([g, col, desc]) => (
+        <div style={{ color: C.textMuted, fontSize: 12, marginBottom: 4 }}>
+          Field names, types, and group membership are shown. Label-group field semantics are defined by the proprietary cognitive architecture.
+        </div>
+        <div style={{ fontSize: 10, color: C.gold, fontStyle: "italic", marginBottom: 14 }}>
+          Label field definitions: proprietary · available under partnership agreement
+        </div>
+        <div style={{ display: "flex", gap: 14, marginBottom: 14, flexWrap: "wrap" }}>
+          {[["label", C.accent, "Labeling dimensions — the diagnostic core (proprietary)"], ["estimate", C.blue, "Psychometric estimates"], ["context", C.textMuted, "Record context"]].map(([g, col, desc]) => (
             <div key={g} style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div style={{ width: 10, height: 10, borderRadius: 2, background: col, flexShrink: 0 }} />
               <span style={{ color: C.textMuted, fontSize: 11 }}>{desc}</span>
@@ -1174,7 +1298,7 @@ function ResearcherScreen() {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
             <thead>
               <tr style={{ background: C.surfaceUp }}>
-                {["Field","Type","Description"].map(h => (
+                {["Field", "Type", "Description"].map(h => (
                   <th key={h} style={{ padding: "8px 10px", textAlign: "left", color: C.textMuted, border: `1px solid ${C.border}` }}>{h}</th>
                 ))}
               </tr>
@@ -1184,7 +1308,15 @@ function ResearcherScreen() {
                 <tr key={i} style={{ background: i % 2 === 0 ? C.surface : C.surfaceUp }}>
                   <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: schemaGroupColor[row.group], fontFamily: "monospace", fontWeight: 700 }}>{row.field}</td>
                   <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: C.purple, fontFamily: "monospace" }}>{row.type}</td>
-                  <td style={{ padding: "8px 10px", border: `1px solid ${C.border}`, color: row.group === "label" ? C.text : C.textMuted, lineHeight: 1.5 }}>{row.desc}</td>
+                  <td style={{ padding: "8px 10px", border: `1px solid ${C.border}` }}>
+                    {row.group === "label"
+                      ? <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ color: C.gold, fontSize: 9, fontFamily: "monospace" }}>🔒</span>
+                          <span style={{ color: C.textDim, fontSize: 11, fontStyle: "italic" }}>Defined by proprietary cognitive architecture — available under NDA</span>
+                        </span>
+                      : <span style={{ color: row.group === "estimate" ? C.text : C.textMuted, lineHeight: 1.5 }}>{row.desc}</span>
+                    }
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -1192,84 +1324,35 @@ function ResearcherScreen() {
         </div>
       </Card>
 
-      {/* expandable deep-dives */}
+      {/* expandable deep-dives — titles + subtitles present; content gated */}
       {[
         {
           key: "psych", open: psychOpen, toggle: () => setPsychOpen(o => !o),
           title: "Psychometrician Deep-Dive",
-          sub: "Q-matrix · IRT parameters · Belief state updating · Distractor design",
+          sub: "Q-matrix structure · IRT parameter priors · Belief state updating · Distractor design logic",
           color: C.blue,
           content: (
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div>
-                <div style={{ fontSize: 11, color: C.blue, fontWeight: 800, marginBottom: 8 }}>QUASI-Q MATRIX — 6.RP.A.1 DIAGNOSTIC INSTRUMENT</div>
-                <div style={{ overflowX: "auto" }}>
-                  <table style={{ borderCollapse: "collapse", fontSize: 11, width: "100%" }}>
-                    <thead>
-                      <tr style={{ background: C.surfaceUp }}>
-                        {["Misunderstanding","Type","CR","D2","D3","D4","D5"].map(h => (
-                          <th key={h} style={{ padding: "7px 10px", color: C.textMuted, textAlign: h === "Misunderstanding" ? "left" : "center", border: `1px solid ${C.border}` }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[
-                        { name: "Subtracting instead of comparing", type: "Gateway", typeColor: C.red, cr: "✓", d2: "A", d3: "—", d4: "—", d5: "—" },
-                        { name: "Ratio as single number", type: "Foundational", typeColor: C.red, cr: "—", d2: "C", d3: "D", d4: "C", d5: "D" },
-                        { name: "Part-to-part vs part-to-whole", type: "Structural", typeColor: C.amber, cr: "✓", d2: "D", d3: "A", d4: "B", d5: "A" },
-                        { name: "Wrong referent order", type: "Coordination", typeColor: C.purple, cr: "✓", d2: "—", d3: "B", d4: "—", d5: "B" },
-                        { name: "Fraction notation only", type: "Representational", typeColor: C.blue, cr: "—", d2: "—", d3: "—", d4: "D", d5: "C" },
-                        { name: "Prerequisite: ratio as relationship", type: "Prerequisite", typeColor: C.textMuted, cr: "✓", d2: "—", d3: "—", d4: "—", d5: "—" },
-                      ].map((row, i) => (
-                        <tr key={i} style={{ background: i % 2 === 0 ? C.surface : C.surfaceUp }}>
-                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.text }}>{row.name}</td>
-                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, textAlign: "center" }}><Tag small color={row.typeColor}>{row.type}</Tag></td>
-                          {[row.cr, row.d2, row.d3, row.d4, row.d5].map((cell, j) => (
-                            <td key={j} style={{ padding: "7px 10px", border: `1px solid ${C.border}`, textAlign: "center", color: cell !== "—" ? row.typeColor : C.textDim, fontWeight: cell !== "—" ? 700 : 400 }}>{cell}</td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              <div style={{ background: C.gold + "11", border: `1px solid ${C.gold}44`, borderRadius: 8, padding: "16px 18px" }}>
+                <div style={{ color: C.gold, fontWeight: 800, fontSize: 12, marginBottom: 6 }}>🔒 Technical specification available under partnership agreement</div>
+                <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.7 }}>
+                  This section contains the complete Q-matrix, hypothesized 3PL IRT priors, distractor design logic, and belief state updating architecture.
+                  These materials define the psychometric foundation of the measurement model and constitute proprietary IP.
+                  Available for review under NDA to qualified technical partners.
                 </div>
-              </div>
-              <div>
-                <div style={{ fontSize: 11, color: C.blue, fontWeight: 800, marginBottom: 8 }}>HYPOTHESIZED 3PL IRT PRIORS — EXPERT-BASED, PRE-CALIBRATION</div>
-                <div style={{ overflowX: "auto" }}>
-                  <table style={{ borderCollapse: "collapse", fontSize: 11, width: "100%" }}>
-                    <thead>
-                      <tr style={{ background: C.surfaceUp }}>
-                        {["Item","b (difficulty)","a (discrimination)","c (pseudo-guessing)","Notes"].map(h => (
-                          <th key={h} style={{ padding: "7px 10px", color: C.textMuted, textAlign: "left", border: `1px solid ${C.border}` }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[
-                        { item: "D1 (CR — gateway screen)", b: "−0.20", a: "1.65", c: "n/a", note: "Moderate b — gateway screen, not hardest item. High discrimination by design." },
-                        { item: "D2 (baseline)", b: "−0.60", a: "1.30", c: "0.07", note: "Easiest MC item. All strategies converge if understanding intact." },
-                        { item: "D3 (targeted)", b: "+0.30", a: "1.50", c: "0.08", note: "Part-to-whole discrimination. Numbers chosen for distinct wrong answers." },
-                        { item: "D4 (targeted)", b: "+0.50", a: "1.45", c: "0.09", note: "Secondary discrimination. Adjacent misconceptions produce distinct responses." },
-                        { item: "D5 (applied)", b: "+0.80", a: "1.35", c: "0.12", note: "Highest difficulty. Irrelevant information lure present." },
-                      ].map((row, i) => (
-                        <tr key={i} style={{ background: i % 2 === 0 ? C.surface : C.surfaceUp }}>
-                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.text, fontFamily: "monospace" }}>{row.item}</td>
-                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.accent, fontFamily: "monospace", textAlign: "center" }}>{row.b}</td>
-                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.blue, fontFamily: "monospace", textAlign: "center" }}>{row.a}</td>
-                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.purple, fontFamily: "monospace", textAlign: "center" }}>{row.c}</td>
-                          <td style={{ padding: "7px 10px", border: `1px solid ${C.border}`, color: C.textMuted, fontSize: 10 }}>{row.note}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
+                  {[
+                    "Full Q-matrix — latent state × item × distractor option mapping",
+                    "Hypothesized 3PL IRT priors per item — expert-based, pre-calibration",
+                    "Distractor design rationale — number selection rules by state type",
+                    "Belief state updating — DINA/DKVMN architecture specification",
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ color: C.gold, fontSize: 10 }}>—</span>
+                      <span style={{ color: C.textMuted, fontSize: 11 }}>{item}</span>
+                    </div>
+                  ))}
                 </div>
-                <div style={{ marginTop: 10, fontSize: 11, color: C.textMuted, lineHeight: 1.6, padding: "8px 12px", background: C.surfaceUp, borderRadius: 6 }}>
-                  <strong style={{ color: C.text }}>Caveats:</strong> These are expert-based priors for Bayesian calibration — not empirical estimates. Discrimination estimates assume distractors work as designed. Minimum pilot sample N ≥ 200 recommended before treating as calibrated parameters. Discrepancies ≥ 0.5 logits (b) or ≥ 0.4 (a) between priors and empirical values warrant item revision.
-                </div>
-              </div>
-              <div style={{ background: C.blueDim, borderRadius: 8, padding: "12px 14px", border: `1px solid ${C.blue}33` }}>
-                <div style={{ fontSize: 11, color: C.blue, fontWeight: 800, marginBottom: 6 }}>BELIEF STATE UPDATING — DINA/DKVMN MODEL</div>
-                <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.7 }}>Each response updates the posterior distribution over the student's misconception state. The prior is initialized from the content specification's hypothesized 3PL parameters. After 5 items, the posterior is sufficiently concentrated to support diagnostic classification. Cross-lesson accumulation narrows the confidence interval — the graph above shows this narrowing as the distribution curves become tighter across lessons 1–4.</div>
               </div>
             </div>
           )
@@ -1277,20 +1360,26 @@ function ResearcherScreen() {
         {
           key: "ml", open: mlOpen, toggle: () => setMlOpen(o => !o),
           title: "ML Engineer Deep-Dive",
-          sub: "Latent state space · Training corpus · Bayesian updating · Stage 1→2 roadmap",
+          sub: "Latent state space · Training corpus · Bayesian updating · Stage 1→2→3 roadmap",
           color: C.purple,
           content: (
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div style={{ background: C.purpleDim, borderRadius: 8, padding: "12px 14px", border: `1px solid ${C.purple}33` }}>
-                <div style={{ fontSize: 11, color: C.purple, fontWeight: 800, marginBottom: 6 }}>LATENT STATE SPACE DEFINITION</div>
-                <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.7 }}>The misconception taxonomy defines a structured discrete latent state space. For 6.RP.A.1: 5 misconception states + 1 prerequisite failure state + mastery state = 7 distinct latent states per standard. States are ordered by diagnostic priority and cognitive step — not arbitrary labels. Cross-standard: states are linked via the learning pathway graph, enabling transition probability estimation across the curriculum sequence.</div>
+                <div style={{ fontSize: 11, color: C.purple, fontWeight: 800, marginBottom: 6 }}>LATENT STATE SPACE — STRUCTURAL PROPERTIES</div>
+                <div style={{ color: C.textMuted, fontSize: 12, lineHeight: 1.7 }}>
+                  The proprietary misconception taxonomy defines a structured discrete latent state space per standard.
+                  States are ordered by diagnostic priority and cognitive step — not arbitrary labels.
+                  Cross-standard: states are linked via the prerequisite dependency graph,
+                  enabling transition probability estimation across the curriculum sequence.
+                  Specific state count and taxonomy content: available under NDA.
+                </div>
               </div>
               <div>
                 <div style={{ fontSize: 11, color: C.purple, fontWeight: 800, marginBottom: 8 }}>WHAT MAKES THIS CORPUS DIFFERENT</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {[
                     ["Standard behavioral proxy corpus", "Right/wrong sequences + time-on-task + clickstreams. Latent states inferred post-hoc via clustering or HMM. Labels are behavioral categories, not cognitive constructs.", C.textMuted],
-                    ["Resolve labeled corpus", "Response sequences tagged against psychometrician-defined misconception taxonomy at item design time. Latent states defined before a single data point is collected. Labels are cognitive constructs with theoretical grounding and IRT priors.", C.purple],
+                    ["Resolve labeled corpus", "Response sequences tagged against psychometrician-defined misconception taxonomy at item design time. Latent states and elicitation conditions jointly specified before a single data point is collected. Labels are cognitive constructs with theoretical grounding, IRT priors, and discrimination guarantees.", C.purple],
                   ].map(([title, desc, col], i) => (
                     <div key={i} style={{ background: C.surfaceUp, borderRadius: 8, padding: "10px 14px", borderLeft: `3px solid ${col}` }}>
                       <div style={{ color: col, fontWeight: 700, fontSize: 12, marginBottom: 4 }}>{title}</div>
@@ -1303,18 +1392,18 @@ function ResearcherScreen() {
                 <div style={{ fontSize: 11, color: C.purple, fontWeight: 800, marginBottom: 8 }}>BAYESIAN UPDATING — LIKELIHOOD FUNCTION</div>
                 <div style={{ background: C.surface, borderRadius: 8, padding: "12px 14px", fontFamily: "monospace", fontSize: 11, color: C.accent, border: `1px solid ${C.border}`, lineHeight: 1.8 }}>
                   P(state_k | response_sequence) ∝ P(response_sequence | state_k) × P(state_k)<br/>
-                  <span style={{ color: C.textMuted }}>// Prior: 3PL parameters from content spec</span><br/>
-                  <span style={{ color: C.textMuted }}>// Likelihood: Q-matrix × slip/guess parameters per item</span><br/>
+                  <span style={{ color: C.textMuted }}>// Prior: 3PL parameters from proprietary content specification</span><br/>
+                  <span style={{ color: C.textMuted }}>// Likelihood: Q-matrix structure × elicitation condition parameters per item</span><br/>
                   <span style={{ color: C.textMuted }}>// Posterior: updated after each response, concentrated after 5 items</span><br/>
-                  <span style={{ color: C.textMuted }}>// Cross-lesson: posterior becomes prior for next lesson</span>
+                  <span style={{ color: C.textMuted }}>// Cross-lesson: posterior becomes prior for next lesson on same standard</span>
                 </div>
               </div>
               <div>
                 <div style={{ fontSize: 11, color: C.purple, fontWeight: 800, marginBottom: 8 }}>STAGE ROADMAP</div>
                 {[
-                  { stage: "Stage 1 — Now", title: "Knowledge tracing with interpretable states", desc: "Labeled response sequences train KT models where latent constructs are psychometrician-defined. Models trace which specific misconception is active at which cognitive step — not a mastery probability. DKVMN architecture well-suited: key memory stores misconception state vectors, value memory stores evidence from labeled responses.", color: C.accent },
-                  { stage: "Stage 2 — Medium term", title: "Within-instruction proficiency measurement", desc: "Cognitive step sequences define a generative model for student behavior during instruction. In-lesson responses (not just exit ticket) become evidence for updating belief state in real time — predicting which misconception a student holds before the exit ticket is scored. Enables adaptive in-lesson branching.", color: C.blue },
-                  { stage: "Stage 3 — Scale", title: "Cross-standard learning pathway optimization", desc: "Accumulated transition probabilities across the learning pathway graph enable personalized sequencing recommendations. Which students need prerequisite remediation before the next standard? Which are ready for enrichment? The pathway graph structure makes this tractable without requiring black-box embeddings.", color: C.purple },
+                  { stage: "Stage 1 — Now", title: "Knowledge tracing with interpretable states", desc: "Labeled response sequences train KT models where latent constructs are psychometrician-defined. Models trace which specific misconception is active at which cognitive step — not a mastery probability. DKVMN architecture well-suited.", color: C.accent },
+                  { stage: "Stage 2 — Medium term", title: "Within-instruction proficiency measurement", desc: "Cognitive step sequences define a generative model for student behavior during instruction. In-lesson responses become evidence for real-time belief state updating — predicting which latent state a student holds before the exit ticket is scored.", color: C.blue },
+                  { stage: "Stage 3 — Scale", title: "Cross-standard learning pathway optimization", desc: "Accumulated transition probabilities across the psychometrician-authored prerequisite graph enable personalized sequencing. The graph structure makes this tractable without black-box embeddings — the causal structure is known in advance.", color: C.purple },
                 ].map((s, i) => (
                   <div key={i} style={{ background: C.surfaceUp, borderRadius: 8, padding: "12px 14px", borderLeft: `3px solid ${s.color}`, marginBottom: 8 }}>
                     <div style={{ fontSize: 10, color: s.color, fontWeight: 800, marginBottom: 4 }}>{s.stage}</div>
